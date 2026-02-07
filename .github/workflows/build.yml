@@ -1,0 +1,91 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version to inject into build'
+        required: false
+        type: string
+        default: '0.0.0-dev'
+      environment:
+        description: 'Environment name'
+        required: false
+        type: string
+        default: 'development'
+    outputs:
+      artifact-name:
+        description: 'Name of the build artifact'
+        value: ${{ jobs.build.outputs.artifact-name }}
+
+jobs:
+  build:
+    name: Build Packages
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.upload.outputs.artifact-name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set build metadata
+        id: metadata
+        run: |
+          VERSION="${{ inputs.version || '0.0.0-dev' }}"
+          ENVIRONMENT="${{ inputs.environment || 'development' }}"
+          BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+          echo "BUILD_TIME=$BUILD_TIME" >> $GITHUB_ENV
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
+          echo "build-time=$BUILD_TIME" >> $GITHUB_OUTPUT
+          
+          echo "Build metadata:"
+          echo "  Version: $VERSION"
+          echo "  Environment: $ENVIRONMENT"
+          echo "  Build Time: $BUILD_TIME"
+
+      - name: Build packages
+        run: |
+          cd packages/example-app
+          npm run build
+          echo "Build output:"
+          cat dist/index.js
+
+      - name: Test packages
+        run: |
+          cd packages/example-app
+          npm run test
+
+      - name: Create artifact name
+        id: artifact
+        run: |
+          ARTIFACT_NAME="build-${{ steps.metadata.outputs.version }}-${{ github.sha }}"
+          echo "artifact-name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+          echo "Artifact name: $ARTIFACT_NAME"
+
+      - name: Upload build artifacts
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact.outputs.artifact-name }}
+          path: |
+            packages/*/dist/
+            packages/*/package.json
+            packages/*/Dockerfile
+          retention-days: 30
