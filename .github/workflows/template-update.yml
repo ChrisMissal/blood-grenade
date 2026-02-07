@@ -1,0 +1,62 @@
+name: Template Update Check
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  template-update:
+    name: Check for Template Updates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for template updates
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEMPLATE_SOURCE: ${{ vars.TEMPLATE_SOURCE }}
+        run: |
+          if [[ -z "$TEMPLATE_SOURCE" ]]; then
+            echo "No TEMPLATE_SOURCE configured. Skipping template update check."
+            exit 0
+          fi
+
+          LOCAL_VERSION=$(cat TEMPLATE_VERSION | tr -d '\n')
+          REMOTE_CONTENT=$(gh api repos/"$TEMPLATE_SOURCE"/contents/TEMPLATE_VERSION -q .content | base64 --decode | tr -d '\n')
+
+          if [[ -z "$REMOTE_CONTENT" ]]; then
+            echo "::warning::Unable to read TEMPLATE_VERSION from $TEMPLATE_SOURCE"
+            exit 0
+          fi
+
+          if [[ "$LOCAL_VERSION" == "$REMOTE_CONTENT" ]]; then
+            echo "Template is up to date (version $LOCAL_VERSION)."
+            exit 0
+          fi
+
+          NEWER=$(printf '%s\n' "$LOCAL_VERSION" "$REMOTE_CONTENT" | sort -V | tail -n 1)
+          if [[ "$NEWER" != "$REMOTE_CONTENT" ]]; then
+            echo "Template source version ($REMOTE_CONTENT) is not newer than local ($LOCAL_VERSION)."
+            exit 0
+          fi
+
+          echo "::warning::Template update available: $REMOTE_CONTENT (local: $LOCAL_VERSION)"
+
+          EXISTING=$(gh api repos/"${{ github.repository }}"/issues -q '.[] | select(.state == "open" and (.labels[]?.name == "template-update")) | .number' | head -n 1)
+          if [[ -z "$EXISTING" ]]; then
+            if ! gh api repos/"${{ github.repository }}"/labels/template-update >/dev/null 2>&1; then
+              gh label create template-update --color FF9F1C --description "Template update notifications" || true
+            fi
+            gh issue create \
+              --title "Template update available ($REMOTE_CONTENT)" \
+              --body "A newer template version ($REMOTE_CONTENT) is available from $TEMPLATE_SOURCE.\n\nRun: ./scripts/update-template.sh $TEMPLATE_SOURCE" \
+              --label "template-update" || true
+          else
+            echo "Existing template update issue: #$EXISTING"
+          fi

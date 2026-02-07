@@ -34,31 +34,7 @@ echo "Setting up GitHub configuration for $REPO"
 echo "=========================================="
 
 echo ""
-echo "Step 1: Configuring branch protection for 'main'"
-echo "------------------------------------------------"
-
-# Configure branch protection for main
-gh api repos/"$REPO"/branches/main/protection \
-  --method PUT \
-  --silent \
-  --field required_status_checks[strict]=true \
-  --field required_status_checks[contexts][]=Validate\ Conventional\ Commits \
-  --field required_status_checks[contexts][]=Validate\ All\ Commits \
-  --field required_status_checks[contexts][]=Build\ Example\ App \
-  --field required_pull_request_reviews[required_approving_review_count]=1 \
-  --field required_pull_request_reviews[dismiss_stale_reviews]=true \
-  --field required_pull_request_reviews[require_code_owner_reviews]=false \
-  --field enforce_admins=true \
-  --field restrictions=null \
-  --field required_linear_history=false \
-  --field allow_force_pushes=false \
-  --field allow_deletions=false \
-  --field required_conversation_resolution=true \
-  && echo "✅ Branch protection configured for 'main'" \
-  || echo "⚠️  Failed to configure branch protection (may require admin permissions)"
-
-echo ""
-echo "Step 2: Enforcing squash merge only"
+echo "Step 1: Enforcing squash merge only"
 echo "------------------------------------"
 
 # Configure repository settings to allow only squash merge
@@ -72,68 +48,24 @@ gh api repos/"$REPO" \
   || echo "⚠️  Failed to configure merge settings"
 
 echo ""
-echo "Step 3: Creating branch name ruleset"
+echo "Step 2: Applying repository rulesets"
 echo "-------------------------------------"
 
-# Create a ruleset for allowed branch patterns
-RULESET_JSON=$(cat <<'EOF'
-{
-  "name": "Branch naming convention",
-  "target": "branch",
-  "enforcement": "active",
-  "conditions": {
-    "ref_name": {
-      "include": [
-        "refs/heads/main",
-        "refs/heads/feat/*",
-        "refs/heads/fix/*",
-        "refs/heads/docs/*",
-        "refs/heads/chore/*",
-        "refs/heads/refactor/*",
-        "refs/heads/test/*",
-        "refs/heads/ci/*",
-        "refs/heads/perf/*",
-        "refs/heads/build/*",
-        "refs/heads/style/*",
-        "refs/heads/revert/*",
-        "refs/heads/releases/*"
-      ],
-      "exclude": []
-    }
-  },
-  "rules": [
-    {
-      "type": "creation"
-    },
-    {
-      "type": "update"
-    },
-    {
-      "type": "deletion"
-    }
-  ],
-  "bypass_actors": []
-}
-EOF
-)
-
-# Try to create the ruleset
-if gh api repos/"$REPO"/rulesets \
-  --method POST \
-  --silent \
-  --input - <<< "$RULESET_JSON" 2>/dev/null; then
-    echo "✅ Branch naming ruleset created"
-else
-    echo "⚠️  Could not create ruleset (may already exist or require permissions)"
-fi
+./scripts/apply-rulesets.sh
 
 echo ""
-echo "Step 4: Restricting direct pushes to main"
-echo "------------------------------------------"
+echo "Step 3: Creating GitOps environment branches"
+echo "--------------------------------------------"
 
-# Note: Direct push restriction is already handled by branch protection
-# requiring pull requests. This is just a confirmation message.
-echo "✅ Direct pushes to 'main' are restricted (enforced by branch protection)"
+BASE_SHA=$(gh api repos/"$REPO"/git/ref/heads/main -q .object.sha)
+for env_branch in env/dev env/staging env/prod; do
+  if gh api repos/"$REPO"/git/ref/heads/"$env_branch" >/dev/null 2>&1; then
+    echo "✓ Branch already exists: $env_branch"
+  else
+    gh api repos/"$REPO"/git/refs --method POST --field ref="refs/heads/$env_branch" --field sha="$BASE_SHA" >/dev/null
+    echo "✅ Created branch: $env_branch"
+  fi
+done
 
 echo ""
 echo "=========================================="
@@ -141,18 +73,10 @@ echo "GitHub configuration complete!"
 echo "=========================================="
 echo ""
 echo "Configuration Summary:"
-echo "  ✓ Branch protection on 'main' with required PR"
+echo "  ✓ Rulesets applied from infra/rulesets.json"
 echo "  ✓ Squash merge only (no merge commits or rebase)"
-echo "  ✓ Required status checks:"
-echo "    - Validate Conventional Commits"
-echo "    - Validate All Commits"
-echo "    - Build Example App"
 echo "  ✓ 1 approval required"
-echo "  ✓ Stale review dismissal enabled"
-echo "  ✓ Conversation resolution required"
-echo "  ✓ Direct pushes to main blocked"
-echo "  ✓ Force pushes and deletions blocked"
-echo "  ✓ Branch naming ruleset applied"
+echo "  ✓ GitOps environment branches: env/dev, env/staging, env/prod"
 echo ""
 echo "You can verify the configuration at:"
 echo "  https://github.com/$REPO/settings/branches"

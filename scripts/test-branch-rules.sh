@@ -70,6 +70,10 @@ VALID_BRANCHES=(
     "build/update-deps"
     "style/format"
     "revert/undo-change"
+    "releases/v1.2.3"
+    "env/dev"
+    "env/staging"
+    "env/prod"
 )
 
 INVALID_BRANCHES=(
@@ -85,7 +89,7 @@ INVALID_BRANCHES=(
 echo "Testing VALID branch patterns (should be allowed):"
 for branch in "${VALID_BRANCHES[@]}"; do
     # Check if branch matches allowed patterns
-    if [[ "$branch" =~ ^(feat|fix|docs|chore|refactor|test|ci|perf|build|style|revert)/ ]]; then
+    if [[ "$branch" =~ ^(env/(dev|staging|prod)|releases/|feat/|fix/|docs/|chore/|refactor/|test/|ci/|perf/|build/|style/|revert/) ]]; then
         echo "  ✅ $branch - matches conventional commit pattern"
     else
         echo "  ❌ $branch - does NOT match expected pattern"
@@ -96,7 +100,7 @@ echo ""
 echo "Testing INVALID branch patterns (should be rejected):"
 for branch in "${INVALID_BRANCHES[@]}"; do
     # Check if branch matches allowed patterns
-    if [[ "$branch" =~ ^(feat|fix|docs|chore|refactor|test|ci|perf|build|style|revert)/ ]]; then
+    if [[ "$branch" =~ ^(env/(dev|staging|prod)|releases/|feat/|fix/|docs/|chore/|refactor/|test/|ci/|perf/|build/|style/|revert/) ]]; then
         echo "  ⚠️  $branch - unexpectedly matches pattern"
     else
         echo "  ✅ $branch - correctly does NOT match pattern"
@@ -199,7 +203,7 @@ for test_case in "${TEST_CASES[@]}"; do
     expected="${test_case##*:}"
     
     # Validate against allowed patterns
-    if [[ "$branch" =~ ^(feat|fix|docs|chore|refactor|test|ci|perf|build|style|revert)/ ]]; then
+    if [[ "$branch" =~ ^(env/(dev|staging|prod)|releases/|feat/|fix/|docs/|chore/|refactor/|test/|ci/|perf/|build/|style/|revert/) ]]; then
         result="PASS"
     else
         result="FAIL"
