@@ -10,7 +10,7 @@ The pipeline is built around several key principles:
 2. **Conventional Commits**: All PRs must follow conventional commit format
 3. **Semantic Versioning**: Automatic version bumping based on commit types
 4. **Immutable Releases**: Each release creates a tagged, immutable artifact
-5. **Automated Publishing**: GitHub Releases and GHCR container publishing
+5. **Automated Publishing**: GitHub Releases and container publishing
 6. **Manual Deployments**: Tag-based deployments to specific environments
 7. **Version Injection**: Build metadata embedded at build time
 
@@ -41,7 +41,7 @@ The pipeline is built around several key principles:
 - Pull requests to `main`
 - Called by other workflows
 
-**Purpose**: Builds packages with version and environment metadata injection
+**Purpose**: Builds apps with version and environment metadata injection
 
 **Inputs** (when called as reusable workflow):
 - `version`: Version to inject (default: `0.0.0-dev`)
@@ -53,8 +53,8 @@ The pipeline is built around several key principles:
 **Steps**:
 1. Setup Node.js environment
 2. Inject build metadata (version, environment, build time)
-3. Build all packages in `packages/` directory
-4. Run package tests
+3. Build all apps in `apps/` directory
+4. Run app tests
 5. Upload build artifacts
 
 **Metadata Injection**:
@@ -70,22 +70,22 @@ export const VERSION = '1.2.3';
 
 **Trigger**: Push to `main` branch
 
-**Purpose**: Creates semantic releases with GitHub Releases and GHCR publishing
+**Purpose**: Creates semantic releases with GitHub Releases and container publishing
 
 **Flow**:
 1. **Analyze Commits**: Uses semantic-release to determine next version
 2. **Create Release**: Creates GitHub Release with release notes
 3. **Build Artifacts**: Builds with production metadata
-4. **Publish Images**: Publishes Docker images to GHCR
+4. **Publish Images**: Publishes Docker images to __CONTAINER_REGISTRY__
 
 **Outputs**:
 - Creates git tag (e.g., `v1.2.3`)
 - Creates GitHub Release with notes
-- Publishes Docker image to GHCR with tags:
-  - `ghcr.io/owner/repo/example-app:1.2.3`
-  - `ghcr.io/owner/repo/example-app:1.2`
-  - `ghcr.io/owner/repo/example-app:1`
-  - `ghcr.io/owner/repo/example-app:latest`
+- Publishes Docker image to __CONTAINER_REGISTRY__ with tags:
+  - `__CONTAINER_REGISTRY__/owner/repo/example:1.2.3`
+  - `__CONTAINER_REGISTRY__/owner/repo/example:1.2`
+  - `__CONTAINER_REGISTRY__/owner/repo/example:1`
+  - `__CONTAINER_REGISTRY__/owner/repo/example:latest`
 
 **Version Bumping**:
 - `feat`: Minor version bump (1.2.3 → 1.3.0)
@@ -123,15 +123,15 @@ gh workflow run deploy.yml -f tag=v1.2.3 -f environment=production
 ## Monorepo Structure
 
 ```
-blood-grenade/
+__PROJECT_NAME__/
 ├── .github/
 │   └── workflows/
 │       ├── pr-check.yml      # PR validation
 │       ├── build.yml         # Build with metadata
 │       ├── release.yml       # Semantic release + publish
 │       └── deploy.yml        # Manual deployment
-├── packages/
-│   └── example-app/
+├── apps/
+│   └── example/
 │       ├── src/
 │       │   └── index.js      # Source with placeholders
 │       ├── dist/             # Built output (git-ignored)
@@ -148,13 +148,13 @@ blood-grenade/
 
 To fully enable this pipeline, configure branch protection for `main`:
 
-1. Go to Repository Settings → Branches → Branch protection rules
-2. Add rule for `main`:
+1. Run the setup script: `./scripts/setup-github.sh`
+2. Or configure manually for `main`:
    - ✓ Require a pull request before merging
    - ✓ Require approvals (recommended: 1)
    - ✓ Dismiss stale pull request approvals when new commits are pushed
    - ✓ Require status checks to pass before merging
-     - Required checks: `Validate Conventional Commits`
+     - Required checks: `Validate Conventional Commits`, `Validate All Commits`, `Build Example App`
    - ✓ Require branches to be up to date before merging
    - ✓ Do not allow bypassing the above settings
    - ✓ Allow squash commits (ONLY)
@@ -210,19 +210,19 @@ To fully enable this pipeline, configure branch protection for `main`:
    - Select environment
    - Run workflow
 
-## Adding New Packages
+## Adding New Apps
 
 To add a new package to the monorepo:
 
-1. **Create package directory**:
+1. **Create app directory**:
    ```bash
-   mkdir -p packages/my-package/src
+   mkdir -p apps/my-app/src
    ```
 
 2. **Add package.json**:
    ```json
    {
-     "name": "@blood-grenade/my-package",
+     "name": "@__PROJECT_NAME__/my-app",
      "version": "0.0.0-development",
      "scripts": {
        "build": "node build.js",
@@ -231,9 +231,9 @@ To add a new package to the monorepo:
    }
    ```
 
-3. **Add build script** with metadata injection (see `example-app/build.js`)
+3. **Add build script** with metadata injection (see `apps/example/build.js`)
 
-4. **Add Dockerfile** if publishing to GHCR
+4. **Add Dockerfile** if publishing to __CONTAINER_REGISTRY__
 
 5. **Update workflows** to include new package
 
@@ -261,7 +261,7 @@ Each release is immutable and traceable:
 Access injected metadata:
 
 ```javascript
-import { getAppInfo } from '@blood-grenade/example-app';
+import { getAppInfo } from '@__PROJECT_NAME__/example';
 
 const info = getAppInfo();
 console.log(info.version);      // "1.2.3"
@@ -291,11 +291,11 @@ feat: Add feature  →  feat: add feature
 **Fix**: Ensure you're using the correct tag format (e.g., `v1.2.3`)
 **Check**: Run `git tag -l` or check GitHub Releases
 
-### Image Not Found in GHCR
+### Image Not Found in __CONTAINER_REGISTRY__
 
 **Cause**: Release workflow may have failed
 **Fix**: Check Actions tab for failed workflows
-**Check**: Ensure repository visibility allows GHCR packages
+**Check**: Ensure repository visibility allows __CONTAINER_REGISTRY__ packages
 
 ## Best Practices
 

@@ -1,7 +1,7 @@
 {
-  "name": "@blood-grenade/example-app",
+  "name": "@__PROJECT_NAME__/example",
   "version": "0.0.0-development",
-  "description": "Example application for blood-grenade monorepo",
+  "description": "Example application for the __PROJECT_NAME__ template",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {

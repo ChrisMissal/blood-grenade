@@ -1,6 +1,6 @@
-# blood-grenade
+# __PROJECT_NAME__
 
-Monorepo with automated release pipeline demonstrating Git &amp; GitHub automation.
+Reusable template monorepo with an automated release pipeline for Node + Docker apps.
 
 ## Features
 
@@ -9,13 +9,24 @@ Monorepo with automated release pipeline demonstrating Git &amp; GitHub automati
 - 🚀 **Semantic Releases**: Automatic versioning with vX.Y.Z tags
 - 🏗️ **Immutable Releases**: No rebuilds, version injection at build time
 - 📦 **GitHub Releases**: Automated release notes
-- 🐳 **GHCR Publishing**: Container images published automatically
+- 🐳 **Container Publishing**: Container images published automatically
 - 🎯 **Manual Deployments**: Tag-based deployments to environments
 - 📊 **Build Metadata**: Version, environment, and timestamp injection
 
 ## Quick Start
 
-See [PIPELINE.md](PIPELINE.md) for complete documentation.
+See [PIPELINE.md](PIPELINE.md) and [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md) for complete documentation.
+
+### Template Setup
+
+1. Replace placeholders (or run the helper script):
+   ```bash
+   ./scripts/rename-project.sh "__PROJECT_NAME__" "__CONTAINER_REGISTRY__" "__DEFAULT_ENVIRONMENTS__"
+   ```
+2. Configure GitHub settings:
+   ```bash
+   ./scripts/setup-github.sh
+   ```
 
 ### Development Workflow
 
@@ -35,8 +46,8 @@ See [PIPELINE.md](PIPELINE.md) for complete documentation.
 ## Workflows
 
 - **PR Check**: Validates conventional commit format
-- **Build**: Builds packages with version injection
-- **Release**: Creates semantic releases and publishes to GHCR
+- **Build**: Builds the example app with version injection
+- **Release**: Creates semantic releases and publishes to __CONTAINER_REGISTRY__
 - **Deploy**: Manual deployment by tag and environment
 
 ## License

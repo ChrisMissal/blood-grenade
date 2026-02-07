@@ -1,11 +1,11 @@
 {
-  "name": "blood-grenade",
+  "name": "__PROJECT_NAME__",
   "version": "1.0.0",
   "private": true,
-  "description": "Monorepo with automated release pipeline",
+  "description": "Template monorepo with automated release pipeline",
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
@@ -17,10 +17,10 @@
     "semantic-release",
     "conventional-commits"
   ],
-  "author": "Chris Missal",
+  "author": "",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ChrisMissal/blood-grenade.git"
+    "url": "https://github.com/__PROJECT_NAME__/__PROJECT_NAME__.git"
   }
 }

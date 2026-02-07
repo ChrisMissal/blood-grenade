@@ -97,7 +97,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/example-app
+          images: ghcr.io/${{ github.repository }}/example
           tags: |
             type=semver,pattern={{version}},value=${{ needs.release.outputs.new-release-version }}
             type=semver,pattern={{major}}.{{minor}},value=${{ needs.release.outputs.new-release-version }}
@@ -106,17 +106,17 @@ jobs:
 
       - name: Restore build artifacts
         run: |
-          mkdir -p packages/example-app/dist
-          cp -r artifacts/packages/example-app/dist/* packages/example-app/dist/
-          cp artifacts/packages/example-app/package.json packages/example-app/
+          mkdir -p apps/example/dist
+          cp -r artifacts/apps/example/dist/* apps/example/dist/
+          cp artifacts/apps/example/package.json apps/example/
           echo "Restored artifacts:"
-          ls -la packages/example-app/dist/
+          ls -la apps/example/dist/
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./packages/example-app
-          file: ./packages/example-app/Dockerfile
+          context: ./apps/example
+          file: ./apps/example/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: |

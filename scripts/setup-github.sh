@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Setup GitHub repository configuration using GitHub CLI
-# This script configures branch protection and rulesets for the blood-grenade repository
+# This script configures branch protection and rulesets for the current repository
 #
 # Prerequisites:
 # - GitHub CLI (gh) installed and authenticated
@@ -10,14 +10,6 @@ set -euo pipefail
 #
 # Usage:
 #   ./scripts/setup-github.sh
-
-REPO_OWNER="${REPO_OWNER:-ChrisMissal}"
-REPO_NAME="${REPO_NAME:-blood-grenade}"
-REPO="$REPO_OWNER/$REPO_NAME"
-
-echo "=========================================="
-echo "Setting up GitHub configuration for $REPO"
-echo "=========================================="
 
 # Check if gh is installed
 if ! command -v gh &> /dev/null; then
@@ -33,6 +25,14 @@ if ! gh auth status &> /dev/null; then
     exit 1
 fi
 
+if [[ -z "${REPO:-}" ]]; then
+  REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
+fi
+
+echo "=========================================="
+echo "Setting up GitHub configuration for $REPO"
+echo "=========================================="
+
 echo ""
 echo "Step 1: Configuring branch protection for 'main'"
 echo "------------------------------------------------"
@@ -44,7 +44,7 @@ gh api repos/"$REPO"/branches/main/protection \
   --field required_status_checks[strict]=true \
   --field required_status_checks[contexts][]=Validate\ Conventional\ Commits \
   --field required_status_checks[contexts][]=Validate\ All\ Commits \
-  --field required_status_checks[contexts][]=Build\ Packages \
+  --field required_status_checks[contexts][]=Build\ Example\ App \
   --field required_pull_request_reviews[required_approving_review_count]=1 \
   --field required_pull_request_reviews[dismiss_stale_reviews]=true \
   --field required_pull_request_reviews[require_code_owner_reviews]=false \
@@ -146,7 +146,7 @@ echo "  ✓ Squash merge only (no merge commits or rebase)"
 echo "  ✓ Required status checks:"
 echo "    - Validate Conventional Commits"
 echo "    - Validate All Commits"
-echo "    - Build Packages"
+echo "    - Build Example App"
 echo "  ✓ 1 approval required"
 echo "  ✓ Stale review dismissal enabled"
 echo "  ✓ Conversation resolution required"
