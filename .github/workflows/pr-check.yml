@@ -34,6 +34,3 @@ jobs:
             chore
             revert
           requireScope: false
-          subjectPattern: ^(?![A-Z]).+$
-          subjectPatternError: |
-            The subject must not start with an uppercase character.

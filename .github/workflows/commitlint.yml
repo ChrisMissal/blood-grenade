@@ -24,7 +24,7 @@ jobs:
 
       - name: Install commitlint
         run: |
-          npm install --no-save \
+          npm install --save-dev \
             @commitlint/cli@^18.0.0 \
             @commitlint/config-conventional@^18.0.0
 
@@ -36,32 +36,9 @@ jobs:
 
           echo "Validating commits from $BASE_SHA to $HEAD_SHA"
 
-          # Create commitlint config
-          cat > commitlint.config.js << 'EOF'
-          module.exports = {
-            extends: ['@commitlint/config-conventional'],
-            rules: {
-              'type-enum': [
-                2,
-                'always',
-                [
-                  'feat',
-                  'fix',
-                  'docs',
-                  'style',
-                  'refactor',
-                  'perf',
-                  'test',
-                  'build',
-                  'ci',
-                  'chore',
-                  'revert'
-                ]
-              ],
-              'subject-case': [2, 'never', ['upper-case']],
-            }
-          };
-          EOF
-
+          # Use existing commitlint.config.cjs in the repository
           # Validate all commits in the PR
-          npx commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+          npx commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose || {
+            echo "::error::Commitlint validation failed. Please ensure all commits follow conventional commit format."
+            exit 1
+          }
