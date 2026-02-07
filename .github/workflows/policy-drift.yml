@@ -1,0 +1,38 @@
+name: Policy Drift Detection
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    name: Detect Policy Drift
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate rulesets against policy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! command -v jq >/dev/null; then
+            echo "::error::jq is required"
+            exit 1
+          fi
+
+          REPO="${{ github.repository }}"
+
+          desired=$(jq '.rulesets' infra/rulesets.json | jq 'map({name, target, enforcement, conditions, rules, bypass_actors}) | sort_by(.name)')
+          current=$(gh api --paginate repos/"$REPO"/rulesets | jq 'map({name, target, enforcement, conditions, rules, bypass_actors}) | sort_by(.name)')
+
+          if diff -u <(echo "$desired") <(echo "$current"); then
+            echo "✅ Rulesets match policy."
+          else
+            echo "::error::Ruleset drift detected. Run ./scripts/apply-rulesets.sh to reconcile."
+            exit 1
+          fi

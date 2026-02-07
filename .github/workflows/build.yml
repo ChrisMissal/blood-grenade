@@ -27,7 +27,7 @@ on:
 
 jobs:
   build:
-    name: Build Example App
+    name: Build Workspace
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -62,14 +62,14 @@ jobs:
           echo "  Environment: $ENVIRONMENT"
           echo "  Build Time: $BUILD_TIME"
 
-      - name: Build example app
+      - name: Build workspace app
         run: |
           cd apps/example
           npm run build
           echo "Build output:"
           cat dist/index.js
 
-      - name: Test example app
+      - name: Test workspace app
         run: |
           cd apps/example
           npm run test
