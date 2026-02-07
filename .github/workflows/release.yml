@@ -48,32 +48,31 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           node <<'NODE'
-          const fs = require('fs');
-          const semanticRelease = require('semantic-release');
+          (async () => {
+            const fs = require('fs');
+            const { default: semanticRelease } = await import('semantic-release');
 
-          const output = process.env.GITHUB_OUTPUT;
-          const setOutput = (line) => fs.appendFileSync(output, `${line}\n`);
+            const output = process.env.GITHUB_OUTPUT;
+            const setOutput = (line) => fs.appendFileSync(output, `${line}\n`);
 
-          semanticRelease({ dryRun: true, ci: false })
-            .then(result => {
-              if (!result) {
-                console.log('No release published.');
-                setOutput('new-release-published=false');
-                return;
-              }
+            const result = await semanticRelease({ dryRun: true, ci: false });
+            if (!result) {
+              console.log('No release published.');
+              setOutput('new-release-published=false');
+              return;
+            }
 
-              const version = result.nextRelease.version;
-              const tag = result.nextRelease.gitTag;
+            const version = result.nextRelease.version;
+            const tag = result.nextRelease.gitTag;
 
-              console.log(`Release planned: ${tag}`);
-              setOutput('new-release-published=true');
-              setOutput(`new-release-version=${version}`);
-              setOutput(`new-release-git-tag=${tag}`);
-            })
-            .catch(error => {
-              console.error(error);
-              process.exit(1);
-            });
+            console.log(`Release planned: ${tag}`);
+            setOutput('new-release-published=true');
+            setOutput(`new-release-version=${version}`);
+            setOutput(`new-release-git-tag=${tag}`);
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
           NODE
 
       - name: Validate tag uniqueness
