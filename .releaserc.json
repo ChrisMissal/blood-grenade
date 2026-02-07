@@ -1,5 +1,6 @@
 {
   "branches": ["main"],
+  "repositoryUrl": "https://github.com/ChrisMissal/blood-grenade.git",
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
@@ -41,6 +42,11 @@
         }
       }
     ],
-    "@semantic-release/github"
+    [
+      "@semantic-release/github",
+      {
+        "successComment": "🎉 This release is published!"
+      }
+    ]
   ]
 }
