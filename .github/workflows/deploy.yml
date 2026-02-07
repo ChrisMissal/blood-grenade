@@ -20,6 +20,8 @@ jobs:
   validate-tag:
     name: Validate Release Tag
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       tag-exists: ${{ steps.check.outputs.exists }}
       version: ${{ steps.parse.outputs.version }}
@@ -54,6 +56,9 @@ jobs:
     name: Deploy to ${{ inputs.environment }}
     needs: validate-tag
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     environment:
       name: ${{ inputs.environment }}
       url: https://${{ inputs.environment }}.example.com
