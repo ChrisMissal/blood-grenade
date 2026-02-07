@@ -27,7 +27,7 @@ on:
 
 jobs:
   build:
-    name: Build Packages
+    name: Build Example App
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -62,16 +62,16 @@ jobs:
           echo "  Environment: $ENVIRONMENT"
           echo "  Build Time: $BUILD_TIME"
 
-      - name: Build packages
+      - name: Build example app
         run: |
-          cd packages/example-app
+          cd apps/example
           npm run build
           echo "Build output:"
           cat dist/index.js
 
-      - name: Test packages
+      - name: Test example app
         run: |
-          cd packages/example-app
+          cd apps/example
           npm run test
 
       - name: Create artifact name
@@ -87,7 +87,7 @@ jobs:
         with:
           name: ${{ steps.artifact.outputs.artifact-name }}
           path: |
-            packages/*/dist/
-            packages/*/package.json
-            packages/*/Dockerfile
+            apps/*/dist/
+            apps/*/package.json
+            apps/*/Dockerfile
           retention-days: 30

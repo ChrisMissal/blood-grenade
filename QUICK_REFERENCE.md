@@ -58,10 +58,10 @@ git push origin feat/my-feature
 ```bash
 # 1. Find the release tag you want to deploy
 git tag -l
-# or check: https://github.com/ChrisMissal/blood-grenade/releases
+# or check: https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/releases
 
 # 2. Go to GitHub Actions
-# https://github.com/ChrisMissal/blood-grenade/actions/workflows/deploy.yml
+# https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/actions/workflows/deploy.yml
 
 # 3. Click "Run workflow"
 # - Tag: v1.2.3
@@ -90,30 +90,30 @@ gh run watch
 ### Local Development
 
 ```bash
-# Build a package locally
-cd packages/example-app
+# Build the example app locally
+cd apps/example
 VERSION="1.0.0-dev" ENVIRONMENT="local" BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") npm run build
 
-# Test a package
+# Test the example app
 npm run test
 
-# Build all packages
+# Build all apps
 npm run build --workspaces
 
-# Test all packages
+# Test all apps
 npm run test --workspaces
 ```
 
-### Adding a New Package
+### Adding a New App
 
 ```bash
-# 1. Create package directory
-mkdir -p packages/my-package/src
+# 1. Create app directory
+mkdir -p apps/my-app/src
 
 # 2. Create package.json
-cat > packages/my-package/package.json << 'EOF'
+cat > apps/my-app/package.json << 'EOF'
 {
-  "name": "@blood-grenade/my-package",
+  "name": "@__PROJECT_NAME__/my-app",
   "version": "0.0.0-development",
   "scripts": {
     "build": "node build.js",
@@ -122,7 +122,7 @@ cat > packages/my-package/package.json << 'EOF'
 }
 EOF
 
-# 3. Create build script (see example-app/build.js for template)
+# 3. Create build script (see apps/example/build.js for template)
 # 4. Create source files with placeholders
 # 5. Update workflows if needed
 ```
@@ -147,12 +147,12 @@ git tag -l  # List all tags
 # Use format: v1.2.3 (with 'v' prefix)
 ```
 
-#### Can't Find Docker Image in GHCR
+#### Can't Find Docker Image in __CONTAINER_REGISTRY__
 **Fix:** Check if release workflow succeeded
 1. Go to Actions tab
 2. Find "Release" workflow run
 3. Check if "Publish to GHCR" job succeeded
-4. Image URL: `ghcr.io/chrismissal/blood-grenade/example-app:1.2.3`
+4. Image URL: `__CONTAINER_REGISTRY__/__PROJECT_NAME__/example:1.2.3`
 
 ### Useful Commands
 
@@ -188,7 +188,7 @@ gh secret list
 
 **Access in Code:**
 ```javascript
-import { getAppInfo } from '@blood-grenade/example-app';
+import { getAppInfo } from '@__PROJECT_NAME__/example';
 
 const { version, environment, buildTime } = getAppInfo();
 console.log(`Running ${version} in ${environment}`);
@@ -207,8 +207,8 @@ console.log(`Running ${version} in ${environment}`);
 
 ### Links
 
-- **Repository:** https://github.com/ChrisMissal/blood-grenade
-- **Actions:** https://github.com/ChrisMissal/blood-grenade/actions
-- **Releases:** https://github.com/ChrisMissal/blood-grenade/releases
-- **Packages:** https://github.com/ChrisMissal/blood-grenade/packages
+- **Repository:** https://github.com/__PROJECT_NAME__/__PROJECT_NAME__
+- **Actions:** https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/actions
+- **Releases:** https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/releases
+- **Packages:** https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/packages
 - **Full Documentation:** See PIPELINE.md

@@ -1,6 +1,6 @@
 # Scripts
 
-This directory contains automation scripts for managing the blood-grenade repository.
+This directory contains automation scripts for managing the __PROJECT_NAME__ repository.
 
 ## Setup GitHub Configuration
 
@@ -21,7 +21,7 @@ Configures GitHub repository settings including branch protection, merge restric
 ./scripts/setup-github.sh
 
 # Or with custom repository
-REPO_OWNER=myorg REPO_NAME=myrepo ./scripts/setup-github.sh
+REPO=myorg/myrepo ./scripts/setup-github.sh
 ```
 
 ### What it configures
@@ -29,7 +29,7 @@ REPO_OWNER=myorg REPO_NAME=myrepo ./scripts/setup-github.sh
 1. **Branch Protection for `main`:**
    - Requires pull requests with 1 approval
    - Dismisses stale reviews on new commits
-   - Requires status checks: "Validate Conventional Commits", "Validate All Commits", "Build Packages"
+   - Requires status checks: "Validate Conventional Commits", "Validate All Commits", "Build Example App"
    - Requires conversation resolution
    - Blocks force pushes and deletions
 
@@ -73,7 +73,7 @@ docker run --rm \
   /workspace/scripts/test-branch-rules.sh
 
 # Or with custom repository
-REPO_OWNER=myorg REPO_NAME=myrepo ./scripts/test-branch-rules.sh
+REPO=myorg/myrepo ./scripts/test-branch-rules.sh
 ```
 
 ### What it tests
@@ -134,8 +134,24 @@ Both scripts can be integrated into CI/CD pipelines:
 Both scripts support these environment variables:
 
 - `GITHUB_TOKEN` - GitHub authentication token (required if not using `gh auth login`)
-- `REPO_OWNER` - Repository owner (default: `ChrisMissal`)
-- `REPO_NAME` - Repository name (default: `blood-grenade`)
+- `REPO` - Repository in `owner/name` format (defaults to the current repo via `gh repo view`)
+
+## Rename Project
+
+**Script:** `rename-project.sh`
+
+Replaces template placeholders across the repository.
+
+### Usage
+
+```bash
+./scripts/rename-project.sh \"my-project\" \"ghcr.io\" \"development, staging, production\"
+```
+
+**Placeholders replaced:**
+- `__PROJECT_NAME__`
+- `__CONTAINER_REGISTRY__`
+- `__DEFAULT_ENVIRONMENTS__`
 
 ## Troubleshooting
 
@@ -177,7 +193,7 @@ This usually means:
 
 Verify permissions:
 ```bash
-gh api user/repos | jq '.[] | select(.full_name=="ChrisMissal/blood-grenade") | .permissions'
+gh api user/repos | jq '.[] | select(.full_name=="__PROJECT_NAME__/__PROJECT_NAME__") | .permissions'
 ```
 
 ### "Could not create ruleset"
@@ -186,7 +202,7 @@ Rulesets may already exist or require specific permissions. This is often just a
 
 Check existing rulesets:
 ```bash
-gh api repos/ChrisMissal/blood-grenade/rulesets | jq '.'
+gh api repos/__PROJECT_NAME__/__PROJECT_NAME__/rulesets | jq '.'
 ```
 
 ## Manual Verification
@@ -194,13 +210,13 @@ gh api repos/ChrisMissal/blood-grenade/rulesets | jq '.'
 After running the setup script, verify the configuration:
 
 1. **Branch Protection:**
-   https://github.com/ChrisMissal/blood-grenade/settings/branches
+   https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/settings/branches
 
 2. **Rulesets:**
-   https://github.com/ChrisMissal/blood-grenade/settings/rules
+   https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/settings/rules
 
 3. **General Settings:**
-   https://github.com/ChrisMissal/blood-grenade/settings
+   https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/settings
 
 ## Notes
 

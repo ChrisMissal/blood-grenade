@@ -16,14 +16,6 @@ set -euo pipefail
 #   docker run --rm -e GITHUB_TOKEN=$GITHUB_TOKEN -v $(pwd):/workspace -w /workspace \
 #     ghcr.io/cli/cli:latest /workspace/scripts/test-branch-rules.sh
 
-REPO_OWNER="${REPO_OWNER:-ChrisMissal}"
-REPO_NAME="${REPO_NAME:-blood-grenade}"
-REPO="$REPO_OWNER/$REPO_NAME"
-
-echo "=========================================="
-echo "Testing branch name validation for $REPO"
-echo "=========================================="
-
 # Check if gh is installed
 if ! command -v gh &> /dev/null; then
     echo "❌ Error: GitHub CLI (gh) is not installed"
@@ -36,6 +28,14 @@ if ! gh auth status &> /dev/null; then
     echo "Set GITHUB_TOKEN environment variable or run: gh auth login"
     exit 1
 fi
+
+if [[ -z "${REPO:-}" ]]; then
+  REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
+fi
+
+echo "=========================================="
+echo "Testing branch name validation for $REPO"
+echo "=========================================="
 
 echo ""
 echo "Test 1: Checking if rulesets exist"

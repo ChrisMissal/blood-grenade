@@ -1,7 +1,7 @@
 # Branch Protection Configuration
 # 
 # This file documents the recommended branch protection settings.
-# Apply these settings in GitHub: Settings → Branches → Branch protection rules
+# Prefer running ./scripts/setup-github.sh (GitHub CLI) to apply these settings.
 #
 # Note: This requires repository admin permissions to configure.
 
@@ -18,7 +18,7 @@
 - ✓ Require branches to be up to date before merging
 - Required checks:
   - `Validate Conventional Commits` (from pr-check.yml)
-  - `Build Packages` (from build.yml)
+  - `Build Example App` (from build.yml)
 
 ### Merge Methods
 - ✓ Allow squash merging (ONLY)
@@ -40,7 +40,7 @@ gh api repos/:owner/:repo/branches/main/protection \
   --method PUT \
   --field required_status_checks[strict]=true \
   --field required_status_checks[contexts][]=Validate\ Conventional\ Commits \
-  --field required_status_checks[contexts][]=Build\ Packages \
+  --field required_status_checks[contexts][]=Build\ Example\ App \
   --field enforce_admins=true \
   --field required_pull_request_reviews[required_approving_review_count]=1 \
   --field required_pull_request_reviews[dismiss_stale_reviews]=true \
@@ -51,7 +51,7 @@ gh api repos/:owner/:repo/branches/main/protection \
 
 ## Applying via GitHub UI
 
-1. Go to: https://github.com/ChrisMissal/blood-grenade/settings/branches
+1. Go to: https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/settings/branches
 2. Click "Add branch protection rule"
 3. Branch name pattern: `main`
 4. Apply settings as documented above

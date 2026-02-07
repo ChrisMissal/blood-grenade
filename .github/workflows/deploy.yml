@@ -17,8 +17,40 @@ on:
           - production
 
 jobs:
+  validate-inputs:
+    name: Validate Inputs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      normalized-tag: ${{ steps.normalize.outputs.tag }}
+    steps:
+      - name: Validate tag format
+        id: normalize
+        run: |
+          TAG="${{ inputs.tag }}"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Tag must be a semantic version starting with v (e.g., v1.2.3)."
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Validate environment input
+        run: |
+          ENVIRONMENT="${{ inputs.environment }}"
+          ALLOWED=("development" "staging" "production")
+          for allowed in "${ALLOWED[@]}"; do
+            if [[ "$ENVIRONMENT" == "$allowed" ]]; then
+              echo "Environment $ENVIRONMENT is allowed."
+              exit 0
+            fi
+          done
+          echo "::error::Environment $ENVIRONMENT is not in the allowed list."
+          exit 1
+
   validate-tag:
     name: Validate Release Tag
+    needs: validate-inputs
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -61,7 +93,6 @@ jobs:
       packages: read
     environment:
       name: ${{ inputs.environment }}
-      url: https://${{ inputs.environment }}.example.com
     steps:
       - name: Checkout code at tag
         uses: actions/checkout@v4
@@ -80,17 +111,17 @@ jobs:
 
       - name: Pull image
         run: |
-          IMAGE="ghcr.io/${{ github.repository }}/example-app:${{ needs.validate-tag.outputs.version }}"
+          IMAGE="ghcr.io/${{ github.repository }}/example:${{ needs.validate-tag.outputs.version }}"
           echo "Pulling image: $IMAGE"
           docker pull "$IMAGE"
-          docker tag "$IMAGE" "example-app:latest"
+          docker tag "$IMAGE" "example:latest"
 
       - name: Deploy application
         run: |
           echo "Deploying to ${{ inputs.environment }} environment"
           echo "  Tag: ${{ inputs.tag }}"
           echo "  Version: ${{ needs.validate-tag.outputs.version }}"
-          echo "  Image: ghcr.io/${{ github.repository }}/example-app:${{ needs.validate-tag.outputs.version }}"
+          echo "  Image: ghcr.io/${{ github.repository }}/example:${{ needs.validate-tag.outputs.version }}"
 
           # In a real deployment, you would:
           # - Push to container orchestration (Kubernetes, ECS, etc.)

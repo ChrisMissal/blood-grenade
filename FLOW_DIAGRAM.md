@@ -18,7 +18,7 @@
         │                            │     ✓ Validate PR title     │
         │                            │                             │
         │                            │  4. build.yml runs          │
-        │                            │     ✓ Build packages        │
+        │                            │     ✓ Build apps            │
         │                            │     ✓ Run tests             │
         │                            │                             │
         │  5. Squash merge           │                             │
@@ -48,21 +48,21 @@
                      │                            │  3. build.yml (called)   │
                      │                            │     ├─ Inject version    │
                      │                            │     ├─ Inject env=prod   │
-                     │                            │     ├─ Build packages    │
+                     │                            │     ├─ Build apps        │
                      │                            │     └─ Upload artifacts  │
                      │                            │                          │
-                     │                            │  4. Publish to GHCR      │
+                     │                            │  4. Publish to registry  │
                      │                            │     ├─ Build Docker      │
                      │                            │     └─ Push images       │
-                     │                            ├─────────────────────────>│ ghcr.io/.../app:X.Y.Z
-                     │                            │                          │ ghcr.io/.../app:latest
+                     │                            ├─────────────────────────>│ __CONTAINER_REGISTRY__/.../app:X.Y.Z
+                     │                            │                          │ __CONTAINER_REGISTRY__/.../app:latest
 
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                          DEPLOYMENT WORKFLOW                                 │
 └─────────────────────────────────────────────────────────────────────────────┘
 
-     Operator              deploy.yml                 GHCR              Environment
+     Operator              deploy.yml             __CONTAINER_REGISTRY__      Environment
         │                      │                        │                     │
         │  1. Trigger with     │                        │                     │
         │     tag + env        │                        │                     │
@@ -74,7 +74,7 @@
         │                      │  3. Pull image         │                     │
         │                      ├───────────────────────>│                     │
         │                      │<───────────────────────┤                     │
-        │                      │  ghcr.io/.../app:X.Y.Z │                     │
+        │                      │  __CONTAINER_REGISTRY__/.../app:X.Y.Z │       │
         │                      │                        │                     │
         │                      │  4. Deploy             │                     │
         │                      ├───────────────────────────────────────────>│
@@ -132,5 +132,5 @@
 3. **Tag-Based Deployments**: Always deploy by tag, never by branch
 4. **Metadata Injection**: Version information embedded at build time
 5. **Automated Versioning**: Semantic-release determines versions from commits
-6. **Multiple Publishing**: GitHub Releases for visibility, GHCR for deployment
+6. **Multiple Publishing**: GitHub Releases for visibility, registry for deployment
 7. **Environment Protection**: Use GitHub Environments for approval gates
