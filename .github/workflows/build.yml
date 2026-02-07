@@ -46,15 +46,15 @@ jobs:
           VERSION="${{ inputs.version || '0.0.0-dev' }}"
           ENVIRONMENT="${{ inputs.environment || 'development' }}"
           BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          
+
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
           echo "BUILD_TIME=$BUILD_TIME" >> $GITHUB_ENV
-          
+
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
           echo "build-time=$BUILD_TIME" >> $GITHUB_OUTPUT
-          
+
           echo "Build metadata:"
           echo "  Version: $VERSION"
           echo "  Environment: $ENVIRONMENT"

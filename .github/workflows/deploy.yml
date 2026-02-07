@@ -86,14 +86,14 @@ jobs:
           echo "  Tag: ${{ inputs.tag }}"
           echo "  Version: ${{ needs.validate-tag.outputs.version }}"
           echo "  Image: ghcr.io/${{ github.repository }}/example-app:${{ needs.validate-tag.outputs.version }}"
-          
+
           # In a real deployment, you would:
           # - Push to container orchestration (Kubernetes, ECS, etc.)
           # - Update infrastructure (Terraform, CloudFormation, etc.)
           # - Run database migrations
           # - Perform health checks
           # - Update load balancer configurations
-          
+
           echo "Deployment simulated successfully!"
 
       - name: Verify deployment
@@ -104,7 +104,7 @@ jobs:
           # - Verify database connectivity
           # - Run smoke tests
           # - Check metrics and logs
-          
+
           echo "Deployment verification complete!"
 
       - name: Create deployment record
