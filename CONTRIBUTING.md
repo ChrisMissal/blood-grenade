@@ -72,6 +72,8 @@ We use a **trunk-based development** workflow with squash merges:
 
 We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification. This enables automatic versioning and changelog generation.
 
+**Quick Reference**: See [.github/COMMIT_CONVENTION.md](.github/COMMIT_CONVENTION.md) for a condensed format guide.
+
 ### Format
 
 ```

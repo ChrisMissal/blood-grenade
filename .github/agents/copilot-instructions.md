@@ -118,6 +118,7 @@ This repository enforces architecture rules using `dependency-cruiser`. Always:
 
 - [Conventional Commits Specification](https://www.conventionalcommits.org/)
 - [Commitlint Documentation](https://commitlint.js.org/)
+- [Quick Reference: Commit Convention](../COMMIT_CONVENTION.md) - Condensed format guide
 - Repository-specific documentation:
   - [PIPELINE.md](../../PIPELINE.md) - Release pipeline details
   - [ARCHITECTURE.md](../../ARCHITECTURE.md) - Architecture guidelines
