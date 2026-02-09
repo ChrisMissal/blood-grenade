@@ -90,6 +90,9 @@ gh run watch
 ### Local Development
 
 ```bash
+# Validate dependency architecture
+npm run depcruise
+
 # Build the example app locally
 cd apps/example
 VERSION="1.0.0-dev" ENVIRONMENT="local" BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") npm run build
@@ -102,6 +105,10 @@ npm run build --workspaces
 
 # Test all apps
 npm run test --workspaces
+
+# Generate dependency graph (requires graphviz)
+npm run depcruise:graph
+npm run depcruise:graph:archi
 ```
 
 ### Adding a New App
@@ -124,7 +131,29 @@ EOF
 
 # 3. Create build script (see apps/example/build.js for template)
 # 4. Create source files with placeholders
-# 5. Update workflows if needed
+# 5. Validate architecture: npm run depcruise
+# 6. Update workflows if needed
+```
+
+### Adding Shared Packages
+
+```bash
+# 1. Create package directory
+mkdir -p packages/my-package/src
+
+# 2. Create package.json
+cat > packages/my-package/package.json << 'EOF'
+{
+  "name": "@__PROJECT_NAME__/my-package",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "type": "module"
+}
+EOF
+
+# 3. Create source files
+# 4. Validate architecture: npm run depcruise
+# 5. Apps can now import: import { foo } from '@__PROJECT_NAME__/my-package'
 ```
 
 ### Troubleshooting
@@ -153,6 +182,16 @@ git tag -l  # List all tags
 2. Find "Release" workflow run
 3. Check if "Publish to GHCR" job succeeded
 4. Image URL: `__CONTAINER_REGISTRY__/__PROJECT_NAME__/example:1.2.3`
+
+#### Architecture Validation Failed
+**Fix:** Review dependency rules (see ARCHITECTURE.md)
+```bash
+npm run depcruise  # Check for violations
+```
+Common issues:
+- Apps importing from other apps (extract to packages/)
+- Source files not in src/ directory
+- Packages depending on apps
 
 ### Useful Commands
 
@@ -204,6 +243,9 @@ console.log(`Running ${version} in ${environment}`);
 6. ✅ Use GitHub Environments for production protection
 7. ✅ Never force-push to main branch
 8. ✅ Run local builds before pushing
+9. ✅ Validate architecture rules before committing (npm run depcruise)
+10. ✅ Keep apps independent - use packages for shared code
+11. ✅ Keep source code in src/ directories
 
 ### Links
 
@@ -211,4 +253,7 @@ console.log(`Running ${version} in ${environment}`);
 - **Actions:** https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/actions
 - **Releases:** https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/releases
 - **Packages:** https://github.com/__PROJECT_NAME__/__PROJECT_NAME__/packages
-- **Full Documentation:** See PIPELINE.md
+- **Full Documentation:** 
+  - [PIPELINE.md](PIPELINE.md) - Release pipeline details
+  - [ARCHITECTURE.md](ARCHITECTURE.md) - Dependency architecture rules
+  - [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md) - Initial setup guide

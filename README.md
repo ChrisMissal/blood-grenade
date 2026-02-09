@@ -12,10 +12,11 @@ Reusable template monorepo with an automated release pipeline for Node + Docker 
 - 🐳 **Container Publishing**: Container images published automatically
 - 🎯 **Manual Deployments**: Tag-based deployments to environments
 - 📊 **Build Metadata**: Version, environment, and timestamp injection
+- 🏛️ **Architecture Rules**: Enforced file structure with dependency-cruiser
 
 ## Quick Start
 
-See [PIPELINE.md](PIPELINE.md) and [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md) for complete documentation.
+See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), and [ARCHITECTURE.md](ARCHITECTURE.md) for complete documentation.
 
 ### Template Setup
 
