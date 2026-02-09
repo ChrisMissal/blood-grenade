@@ -59,6 +59,8 @@ This monorepo contains the following applications:
 | App | Location | Type | Description |
 |-----|----------|------|-------------|
 | **hello-world** | [`apps/hello-world`](apps/hello-world) | Starter Template | Console app demonstrating the build pipeline, testing, and release structure. Use as a template for new apps. |
+| **web-app** | [`apps/web-app`](apps/web-app) | Web Server | HTTP server with health checks and metadata endpoints. Demonstrates web service patterns with graceful shutdown. |
+| **web-jobs** | [`apps/web-jobs`](apps/web-jobs) | Web + Background Jobs | HTTP server with background job processing. Demonstrates job queue management, async processing, and API endpoints for job control. |
 
 ### Adding New Apps
 
