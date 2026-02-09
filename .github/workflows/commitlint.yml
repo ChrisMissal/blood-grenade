@@ -22,11 +22,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install commitlint
-        run: |
-          npm install --save-dev \
-            @commitlint/cli@^18.0.0 \
-            @commitlint/config-conventional@^18.0.0
+      - name: Install dependencies
+        run: npm ci
 
       - name: Validate commits
         run: |
@@ -36,9 +33,7 @@ jobs:
 
           echo "Validating commits from $BASE_SHA to $HEAD_SHA"
 
-          # Use existing commitlint.config.cjs in the repository
-          # Validate all commits in the PR
-          npx commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose || {
+          BASE_SHA="$BASE_SHA" HEAD_SHA="$HEAD_SHA" npm run lint || {
             echo "::error::Commitlint validation failed. Please ensure all commits follow conventional commit format."
             exit 1
           }

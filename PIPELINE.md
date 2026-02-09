@@ -52,10 +52,12 @@ The pipeline is built around several key principles:
 
 **Steps**:
 1. Setup Node.js environment
-2. Inject build metadata (version, environment, build time)
-3. Build all apps in `apps/` directory
-4. Run app tests
-5. Upload build artifacts
+2. Validate dependency architecture
+3. Run type checks and dependency checks
+4. Inject build metadata (version, environment, build time)
+5. Build all apps in `apps/` directory
+6. Run app tests
+7. Upload build artifacts
 
 **Metadata Injection**:
 ```javascript
