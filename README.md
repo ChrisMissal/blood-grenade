@@ -61,6 +61,7 @@ This monorepo contains the following applications:
 | **hello-world** | [`apps/hello-world`](apps/hello-world) | Starter Template | Console app demonstrating the build pipeline, testing, and release structure. Use as a template for new apps. |
 | **web-app** | [`apps/web-app`](apps/web-app) | Web Server | HTTP server with health checks and metadata endpoints. Demonstrates web service patterns with graceful shutdown. |
 | **web-jobs** | [`apps/web-jobs`](apps/web-jobs) | Web + Background Jobs | HTTP server with background job processing. Demonstrates job queue management, async processing, and API endpoints for job control. |
+| **task-runner** | [`apps/task-runner`](apps/task-runner) | Task Executor + Web UI | Execute tasks with editable arguments on Docker images, fetch and run code from public GitHub repositories, and monitor progress via single-page web application with real-time output display. |
 
 ### Adding New Apps
 

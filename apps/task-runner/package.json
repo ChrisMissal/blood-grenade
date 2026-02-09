@@ -1,0 +1,21 @@
+{
+  "name": "@__PROJECT_NAME__/task-runner",
+  "version": "0.0.0-development",
+  "description": "Task runner app with Docker and GitHub integration for the __PROJECT_NAME__ template",
+  "main": "dist/index.js",
+  "type": "module",
+  "packageManager": "npm@10.7.0",
+  "scripts": {
+    "build": "node build.js",
+    "commitlint": "node lint.js",
+    "depcheck": "node depcheck.js",
+    "package": "node package.js",
+    "version": "node version.js",
+    "tag": "node tag.js",
+    "typecheck": "node typecheck.js",
+    "test": "node test.js"
+  },
+  "keywords": ["task-runner", "docker", "github", "executor"],
+  "author": "",
+  "license": "MIT"
+}
