@@ -7,4 +7,4 @@ const packageJsonPath = path.join(rootDir, 'package.json');
 
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
-console.log(`Example app version: ${packageJson.version}`);
+console.log(`Hello-world app version: ${packageJson.version}`);
