@@ -4,13 +4,14 @@
   "private": true,
   "description": "Template monorepo with automated release pipeline",
   "type": "module",
+  "packageManager": "npm@10.7.0",
   "workspaces": [
     "apps/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
     "depcheck": "npm run depcheck --workspaces",
-    "lint": "node scripts/commitlint.js",
+    "commitlint": "node scripts/commitlint.js",
     "test": "npm run test --workspaces",
     "typecheck": "node scripts/typecheck.js && npm run typecheck --workspaces",
     "package": "npm run package --workspaces",
