@@ -52,6 +52,27 @@ See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), [ARCHITE
 - **Release**: Creates semantic releases and publishes to __CONTAINER_REGISTRY__
 - **Deploy**: Manual deployment by tag and environment
 
+## Applications Registry
+
+This monorepo contains the following applications:
+
+| App | Location | Type | Description |
+|-----|----------|------|-------------|
+| **hello-world** | [`apps/hello-world`](apps/hello-world) | Starter Template | Console app demonstrating the build pipeline, testing, and release structure. Use as a template for new apps. |
+
+### Adding New Apps
+
+To add a new app to the monorepo:
+
+1. Copy the entire `apps/hello-world` directory as a template
+2. Update `package.json` with your new app name and description
+3. Update `src/index.js` with your app's business logic
+4. Update `version.js` output message
+5. Run tests: `npm run test` (34 structural tests will validate the setup)
+6. Commit with conventional format: `feat: add new-app`
+
+The entire build pipeline, testing, linting, and release automation will work automatically for your new app.
+
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details on:
