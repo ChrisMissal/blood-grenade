@@ -1,5 +1,9 @@
 {
-  "branches": ["main"],
+  "branches": [
+    {
+      "name": "releases/**"
+    }
+  ],
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
@@ -39,6 +43,18 @@
             { "type": "ci", "section": "Continuous Integration", "hidden": true }
           ]
         }
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["CHANGELOG.md"]
       }
     ],
     [

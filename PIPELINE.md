@@ -70,19 +70,21 @@ export const VERSION = '1.2.3';
 
 ### 3. Release (`release.yml`)
 
-**Trigger**: Push to `main` branch
+**Trigger**: Push to `releases/**` branches
 
 **Purpose**: Creates semantic releases with GitHub Releases and container publishing
 
 **Flow**:
 1. **Analyze Commits**: Uses semantic-release to determine next version
 2. **Create Release**: Creates GitHub Release with release notes
-3. **Build Artifacts**: Builds with production metadata
-4. **Publish Images**: Publishes Docker images to __CONTAINER_REGISTRY__
+3. **Update Changelog**: Appends entries to `CHANGELOG.md`
+4. **Build Artifacts**: Builds with production metadata
+5. **Publish Images**: Publishes Docker images to __CONTAINER_REGISTRY__
 
 **Outputs**:
 - Creates git tag (e.g., `v1.2.3`)
 - Creates GitHub Release with notes
+- Updates `CHANGELOG.md` in the release commit
 - Publishes Docker image to __CONTAINER_REGISTRY__ with tags:
   - `__CONTAINER_REGISTRY__/owner/repo/example:1.2.3`
   - `__CONTAINER_REGISTRY__/owner/repo/example:1.2`
