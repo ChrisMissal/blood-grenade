@@ -4,9 +4,11 @@ import { fileURLToPath } from 'node:url';
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const tsconfigPath = path.join(appDir, 'tsconfig.json');
+// Use tsc from root node_modules
+const tscPath = path.join(appDir, '..', '..', 'node_modules', '.bin', 'tsc');
 
 console.log('Running typecheck...\n');
 
-execFileSync('npx', ['tsc', '--noEmit', '--project', tsconfigPath], {
+execFileSync(tscPath, ['--noEmit', '--project', tsconfigPath], {
   stdio: 'inherit',
 });

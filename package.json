@@ -12,7 +12,7 @@
     "depcheck": "npm run depcheck --workspaces",
     "lint": "node scripts/commitlint.js",
     "test": "npm run test --workspaces",
-    "typecheck": "npm run typecheck --workspaces",
+    "typecheck": "node scripts/typecheck.js && npm run typecheck --workspaces",
     "package": "npm run package --workspaces",
     "version": "npm run version --workspaces",
     "tag": "npm run tag --workspaces",
