@@ -45,6 +45,8 @@ jobs:
 
       - name: Plan release
         id: plan
+        # Only run release planning on releases/**/* branches
+        # Pushes to main will trigger the workflow but skip release planning
         if: startsWith(github.ref, 'refs/heads/releases/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
