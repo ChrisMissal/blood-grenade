@@ -48,6 +48,12 @@ jobs:
       - name: Validate dependency architecture
         run: npm run depcruise
 
+      - name: Typecheck workspaces
+        run: npm run typecheck
+
+      - name: Dependency check workspaces
+        run: npm run depcheck
+
       - name: Set build metadata
         id: metadata
         run: |
