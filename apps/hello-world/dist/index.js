@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 export const VERSION = '0.0.0-dev';
 export const ENVIRONMENT = 'development';
-export const BUILD_TIME = '2026-02-09T22:36:12.233Z';
+export const BUILD_TIME = '2026-02-09T22:49:12.140Z';
 
 export function getAppInfo() {
   return {

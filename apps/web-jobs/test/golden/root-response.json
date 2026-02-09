@@ -1,0 +1,5 @@
+{
+  "message": "Web + Jobs Server",
+  "version": "{{VERSION}}",
+  "environment": "{{ENVIRONMENT}}"
+}

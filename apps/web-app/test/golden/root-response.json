@@ -1,0 +1,5 @@
+{
+  "message": "Web App Server",
+  "version": "{{VERSION}}",
+  "environment": "{{ENVIRONMENT}}"
+}
