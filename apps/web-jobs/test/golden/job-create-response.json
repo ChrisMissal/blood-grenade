@@ -1,0 +1,7 @@
+{
+  "id": "{{JOB_ID}}",
+  "type": "{{JOB_TYPE}}",
+  "data": "{{JOB_DATA}}",
+  "status": "pending",
+  "createdAt": "{{TIMESTAMP}}"
+}

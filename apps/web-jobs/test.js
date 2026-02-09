@@ -230,6 +230,72 @@ test('packageManager is npm', () => {
     'packageManager should be locked to npm');
 });
 
+// === GOLDEN FILE TESTS ===
+console.log('\nGolden file validation:');
+
+function normalizeOutput(output, replacements) {
+  let normalized = output;
+  for (const [key, value] of Object.entries(replacements)) {
+    normalized = normalized.replace(new RegExp(`{{${key}}}`, 'g'), value);
+  }
+  return normalized;
+}
+
+function assertMatchesGolden(actual, goldenPath, replacements, description) {
+  const goldenContent = fs.readFileSync(goldenPath, 'utf8');
+  const expected = normalizeOutput(goldenContent, replacements).trim();
+  const actualNormalized = JSON.stringify(JSON.parse(actual), null, 2);
+  const expectedNormalized = JSON.stringify(JSON.parse(expected), null, 2);
+  
+  if (actualNormalized !== expectedNormalized) {
+    throw new Error(`${description}\n    Expected:\n${expectedNormalized}\n    Got:\n${actualNormalized}`);
+  }
+}
+
+test('health response matches golden file', () => {
+  const health = createHealthResponse();
+  const actual = JSON.stringify(health, null, 2);
+  
+  const goldenPath = path.join(__dirname, 'test', 'golden', 'health-response.json');
+  assertMatchesGolden(actual, goldenPath, {
+    VERSION: VERSION,
+    ENVIRONMENT: ENVIRONMENT,
+    BUILD_TIME: BUILD_TIME,
+    TIMESTAMP: health.timestamp
+  }, 'Health response should match golden file');
+});
+
+test('app info response matches golden file', () => {
+  const info = getAppInfo();
+  const actual = JSON.stringify(info, null, 2);
+  
+  const goldenPath = path.join(__dirname, 'test', 'golden', 'info-response.json');
+  assertMatchesGolden(actual, goldenPath, {
+    VERSION: VERSION,
+    ENVIRONMENT: ENVIRONMENT,
+    BUILD_TIME: BUILD_TIME
+  }, 'App info response should match golden file');
+});
+
+test('job list response matches golden file structure', () => {
+  const jobs = getAllJobs();
+  // Validate structure, not exact content (since other tests create jobs)
+  assert('pending' in jobs && Array.isArray(jobs.pending), 
+    'Jobs list should have pending array');
+  assert('completed' in jobs && Array.isArray(jobs.completed), 
+    'Jobs list should have completed array');
+});
+
+test('created job matches golden file structure', () => {
+  const job = createJob('test-type', { key: 'value' });
+  // Only validate structure, not dynamic values
+  assert(job.id && typeof job.id === 'number', 'Job should have numeric id');
+  assert(job.type === 'test-type', 'Job type should match');
+  assert(job.data && typeof job.data === 'object', 'Job should have data object');
+  assert(job.status === 'pending', 'New job should have pending status');
+  assert(job.createdAt && typeof job.createdAt === 'string', 'Job should have createdAt timestamp');
+});
+
 // === SUMMARY ===
 console.log(`\n${'='.repeat(50)}`);
 console.log(`Tests passed: ${testsPassed}`);

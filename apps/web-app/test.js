@@ -215,6 +215,53 @@ test('packageManager is npm', () => {
     'packageManager should be locked to npm');
 });
 
+// === GOLDEN FILE TESTS ===
+console.log('\nGolden file validation:');
+
+function normalizeOutput(output, replacements) {
+  let normalized = output;
+  for (const [key, value] of Object.entries(replacements)) {
+    normalized = normalized.replace(new RegExp(`{{${key}}}`, 'g'), value);
+  }
+  return normalized;
+}
+
+function assertMatchesGolden(actual, goldenPath, replacements, description) {
+  const goldenContent = fs.readFileSync(goldenPath, 'utf8');
+  const expected = normalizeOutput(goldenContent, replacements).trim();
+  const actualNormalized = JSON.stringify(JSON.parse(actual), null, 2);
+  const expectedNormalized = JSON.stringify(JSON.parse(expected), null, 2);
+  
+  if (actualNormalized !== expectedNormalized) {
+    throw new Error(`${description}\n    Expected:\n${expectedNormalized}\n    Got:\n${actualNormalized}`);
+  }
+}
+
+test('health response matches golden file', () => {
+  const health = createHealthResponse();
+  const actual = JSON.stringify(health, null, 2);
+  
+  const goldenPath = path.join(__dirname, 'test', 'golden', 'health-response.json');
+  assertMatchesGolden(actual, goldenPath, {
+    VERSION: VERSION,
+    ENVIRONMENT: ENVIRONMENT,
+    BUILD_TIME: BUILD_TIME,
+    TIMESTAMP: health.timestamp
+  }, 'Health response should match golden file');
+});
+
+test('app info response matches golden file', () => {
+  const info = getAppInfo();
+  const actual = JSON.stringify(info, null, 2);
+  
+  const goldenPath = path.join(__dirname, 'test', 'golden', 'info-response.json');
+  assertMatchesGolden(actual, goldenPath, {
+    VERSION: VERSION,
+    ENVIRONMENT: ENVIRONMENT,
+    BUILD_TIME: BUILD_TIME
+  }, 'App info response should match golden file');
+});
+
 // === SUMMARY ===
 console.log(`\n${'='.repeat(50)}`);
 console.log(`Tests passed: ${testsPassed}`);

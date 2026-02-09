@@ -1,0 +1,6 @@
+Hello, World! Running version {{VERSION}} in {{ENVIRONMENT}}
+
+App Info:
+  Version: {{VERSION}}
+  Environment: {{ENVIRONMENT}}
+  Build Time: {{BUILD_TIME}}

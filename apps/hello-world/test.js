@@ -208,6 +208,44 @@ test('packageManager is npm', () => {
     'packageManager should be locked to npm');
 });
 
+// === GOLDEN FILE TESTS ===
+console.log('\nGolden file validation:');
+
+function normalizeOutput(output, replacements) {
+  let normalized = output;
+  for (const [key, value] of Object.entries(replacements)) {
+    normalized = normalized.replace(new RegExp(`{{${key}}}`, 'g'), value);
+  }
+  return normalized;
+}
+
+function assertMatchesGolden(actual, goldenPath, replacements, description) {
+  const goldenContent = fs.readFileSync(goldenPath, 'utf8');
+  const expected = normalizeOutput(goldenContent, replacements).trim();
+  const actualNormalized = actual.trim();
+  
+  // Normalize line endings for comparison
+  const expectedNorm = expected.replace(/\r\n/g, '\n');
+  const actualNorm = actualNormalized.replace(/\r\n/g, '\n');
+  
+  if (actualNorm !== expectedNorm) {
+    throw new Error(`${description}\n    Expected:\n${expectedNorm}\n    Got:\n${actualNorm}`);
+  }
+}
+
+test('greet output matches golden file format', () => {
+  const greeting = greet('World');
+  const appInfo = getAppInfo();
+  const output = `${greeting}\n\nApp Info:\n  Version: ${appInfo.version}\n  Environment: ${appInfo.environment}\n  Build Time: ${appInfo.buildTime}`;
+  
+  const goldenPath = path.join(__dirname, 'test', 'golden', 'console-output.txt');
+  assertMatchesGolden(output, goldenPath, {
+    VERSION: VERSION,
+    ENVIRONMENT: ENVIRONMENT,
+    BUILD_TIME: BUILD_TIME
+  }, 'Console output should match golden file');
+});
+
 // === SUMMARY ===
 console.log(`\n${'='.repeat(50)}`);
 console.log(`Tests passed: ${testsPassed}`);
