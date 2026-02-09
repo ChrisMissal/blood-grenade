@@ -9,6 +9,7 @@ Reusable template monorepo with an automated release pipeline for Node + Docker 
 - 🚀 **Semantic Releases**: Automatic versioning with vX.Y.Z tags
 - 🏗️ **Immutable Releases**: No rebuilds, version injection at build time
 - 📦 **GitHub Releases**: Automated release notes
+- 🧾 **Changelog Automation**: `CHANGELOG.md` updated on release
 - 🐳 **Container Publishing**: Container images published automatically
 - 🎯 **Manual Deployments**: Tag-based deployments to environments
 - 📊 **Build Metadata**: Version, environment, and timestamp injection
@@ -34,7 +35,7 @@ See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), [ARCHITE
 1. Create feature branch: `git checkout -b feat/my-feature`
 2. Make changes and commit (any format)
 3. Create PR with conventional title: `feat: add new feature`
-4. Squash merge to main
+4. Squash merge to `releases/**`
 5. Automatic release created (if applicable)
 
 ### Deploy a Release

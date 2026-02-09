@@ -3,7 +3,6 @@ name: Release
 on:
   push:
     branches:
-      - main
       - 'releases/**'
 
 concurrency:
@@ -40,13 +39,14 @@ jobs:
             semantic-release@^23.0.0 \
             @semantic-release/commit-analyzer@^11.0.0 \
             @semantic-release/release-notes-generator@^12.0.0 \
+            @semantic-release/changelog@^6.0.0 \
+            @semantic-release/git@^10.0.0 \
             @semantic-release/github@^9.0.0 \
             conventional-changelog-conventionalcommits@^7.0.0
 
       - name: Plan release
         id: plan
-        # Only run release planning on releases/**/* branches
-        # Pushes to main will trigger the workflow but skip release planning
+        # Run release planning only on release branches
         if: startsWith(github.ref, 'refs/heads/releases/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

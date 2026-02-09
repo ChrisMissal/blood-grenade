@@ -35,8 +35,15 @@
   "devDependencies": {
     "@commitlint/cli": "^18.0.0",
     "@commitlint/config-conventional": "^18.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^11.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.2.6",
+    "@semantic-release/release-notes-generator": "^12.1.0",
+    "conventional-changelog-conventionalcommits": "^7.0.2",
     "depcheck": "^1.4.7",
     "dependency-cruiser": "^17.3.8",
+    "semantic-release": "^23.1.1",
     "typescript": "^5.7.3"
   }
 }
