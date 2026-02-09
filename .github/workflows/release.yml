@@ -7,7 +7,7 @@ on:
       - 'releases/**'
 
 concurrency:
-  group: release-main
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
