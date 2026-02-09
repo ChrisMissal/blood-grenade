@@ -16,7 +16,7 @@ Reusable template monorepo with an automated release pipeline for Node + Docker 
 
 ## Quick Start
 
-See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), and [ARCHITECTURE.md](ARCHITECTURE.md) for complete documentation.
+See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), [ARCHITECTURE.md](ARCHITECTURE.md), and [CONTRIBUTING.md](CONTRIBUTING.md) for complete documentation.
 
 ### Template Setup
 
@@ -50,6 +50,21 @@ See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), and [ARC
 - **Build**: Builds the example app with version injection
 - **Release**: Creates semantic releases and publishes to __CONTAINER_REGISTRY__
 - **Deploy**: Manual deployment by tag and environment
+
+## Contributing
+
+We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Commit message guidelines (conventional commits)
+- Pull request process
+- Code standards and architecture rules
+- Testing requirements
+
+**Quick reference for commits:**
+- Use conventional commit format: `type(scope): subject`
+- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`
+- Subject must start with lowercase
+- PR titles must follow the same format
 
 ## License
 
