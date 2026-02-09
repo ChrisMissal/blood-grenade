@@ -42,6 +42,12 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate dependency architecture
+        run: npm run depcruise
+
       - name: Set build metadata
         id: metadata
         run: |

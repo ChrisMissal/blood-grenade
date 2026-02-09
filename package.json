@@ -9,7 +9,10 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
-    "test": "npm run test --workspaces"
+    "test": "npm run test --workspaces",
+    "depcruise": "depcruise apps packages",
+    "depcruise:graph": "depcruise apps packages --output-type dot | dot -T svg > dependency-graph.svg",
+    "depcruise:graph:archi": "depcruise apps packages --output-type archi | dot -T svg > architecture.svg"
   },
   "keywords": [
     "monorepo",
@@ -22,5 +25,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/__PROJECT_NAME__/__PROJECT_NAME__.git"
+  },
+  "devDependencies": {
+    "dependency-cruiser": "^17.3.8"
   }
 }
