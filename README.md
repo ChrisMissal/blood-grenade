@@ -63,6 +63,84 @@ This monorepo contains the following applications:
 | **web-jobs** | [`apps/web-jobs`](apps/web-jobs) | Web + Background Jobs | HTTP server with background job processing. Demonstrates job queue management, async processing, and API endpoints for job control. |
 | **task-runner** | [`apps/task-runner`](apps/task-runner) | Task Executor + Web UI | Execute tasks with editable arguments on Docker images, fetch and run code from public GitHub repositories, and monitor progress via single-page web application with real-time output display. |
 
+## Local Development
+
+To run each app locally, build it first, then execute it. All web apps run on port 3000 by default (configurable via `PORT` environment variable).
+
+### hello-world (Console App)
+
+```bash
+cd apps/hello-world
+npm run build
+node dist/index.js
+```
+
+Output: Displays greeting, version, environment, and build time.
+
+### web-app (HTTP Server)
+
+```bash
+cd apps/web-app
+npm run build
+node dist/index.js
+```
+
+Access the server at `http://localhost:3000`:
+- `GET /` – Root endpoint
+- `GET /health` – Health check with status and metadata
+- `GET /info` – App information (version, environment, build time)
+
+### web-jobs (HTTP Server + Job Queue)
+
+```bash
+cd apps/web-jobs
+npm run build
+node dist/index.js
+```
+
+Access the server at `http://localhost:3000`:
+- `GET /` – Root endpoint
+- `GET /health` – Health check with status and metadata
+- `GET /info` – App information
+- `GET /api/jobs` – List all jobs (pending and completed)
+- `POST /api/jobs` – Create a new job (submit `type` and `data` in JSON body)
+- `GET /api/jobs/:id` – Get a specific job by ID
+
+### task-runner (Task Executor + Web UI)
+
+```bash
+cd apps/task-runner
+npm run build
+node dist/index.js
+```
+
+Access the web application at `http://localhost:3000`:
+- **Web UI** – Single-page app for creating and monitoring tasks
+- `GET /health` – Health check endpoint
+- `GET /info` – App information
+- `POST /api/tasks` – Create a task (JSON: `{name, githubRepo, dockerImage, command, args}`)
+- `GET /api/tasks` – List all tasks
+- `GET /api/tasks/:id` – Get task details
+- `POST /api/tasks/:id/run` – Execute a task
+- `GET /api/tasks/:id/progress` – Poll task progress and output
+- `GET /api/github/repos?query=...` – Search GitHub repositories
+
+**Features:**
+- Create tasks with editable arguments
+- Fetch code from public GitHub repositories
+- Monitor task execution progress in real-time
+- View live task output with syntax highlighting
+- Task management API for automation
+
+### Running All Apps
+
+Build and test all apps at once:
+
+```bash
+npm run build --workspaces
+npm run test --workspaces
+```
+
 ### Adding New Apps
 
 To add a new app to the monorepo:
