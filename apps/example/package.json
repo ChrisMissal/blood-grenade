@@ -4,9 +4,10 @@
   "description": "Example application for the __PROJECT_NAME__ template",
   "main": "dist/index.js",
   "type": "module",
+  "packageManager": "npm@10.7.0",
   "scripts": {
     "build": "node build.js",
-    "lint": "node lint.js",
+    "commitlint": "node lint.js",
     "depcheck": "node depcheck.js",
     "package": "node package.js",
     "version": "node version.js",
