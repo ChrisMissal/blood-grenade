@@ -16,7 +16,7 @@ Thank you for your interest in contributing! This guide will help you understand
 
 1. **Fork and clone the repository**
    ```bash
-   git clone https://github.com/your-username/blood-grenade.git
+   git clone https://github.com/ChrisMissal/blood-grenade.git
    cd blood-grenade
    ```
 
