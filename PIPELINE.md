@@ -86,10 +86,10 @@ export const VERSION = '1.2.3';
 - Creates GitHub Release with notes
 - Updates `CHANGELOG.md` in the release commit
 - Publishes Docker image to __CONTAINER_REGISTRY__ with tags:
-  - `__CONTAINER_REGISTRY__/owner/repo/example:1.2.3`
-  - `__CONTAINER_REGISTRY__/owner/repo/example:1.2`
-  - `__CONTAINER_REGISTRY__/owner/repo/example:1`
-  - `__CONTAINER_REGISTRY__/owner/repo/example:latest`
+  - `__CONTAINER_REGISTRY__/owner/repo/hello-world:1.2.3`
+  - `__CONTAINER_REGISTRY__/owner/repo/hello-world:1.2`
+  - `__CONTAINER_REGISTRY__/owner/repo/hello-world:1`
+  - `__CONTAINER_REGISTRY__/owner/repo/hello-world:latest`
 
 **Version Bumping**:
 - `feat`: Minor version bump (1.2.3 → 1.3.0)
@@ -135,7 +135,7 @@ __PROJECT_NAME__/
 │       ├── release.yml       # Semantic release + publish
 │       └── deploy.yml        # Manual deployment
 ├── apps/
-│   └── example/
+│   └── hello-world/
 │       ├── src/
 │       │   └── index.js      # Source with placeholders
 │       ├── dist/             # Built output (git-ignored)
@@ -158,7 +158,7 @@ To fully enable this pipeline, configure branch protection for `main`:
    - ✓ Require approvals (recommended: 1)
    - ✓ Dismiss stale pull request approvals when new commits are pushed
    - ✓ Require status checks to pass before merging
-     - Required checks: `Validate Conventional Commits`, `Validate All Commits`, `Build Example App`
+     - Required checks: `Validate Conventional Commits`, `Validate All Commits`, `Build Hello-world App`
    - ✓ Require branches to be up to date before merging
    - ✓ Do not allow bypassing the above settings
    - ✓ Allow squash commits (ONLY)
@@ -235,7 +235,7 @@ To add a new package to the monorepo:
    }
    ```
 
-3. **Add build script** with metadata injection (see `apps/example/build.js`)
+3. **Add build script** with metadata injection (see `apps/hello-world/build.js`)
 
 4. **Add Dockerfile** if publishing to __CONTAINER_REGISTRY__
 

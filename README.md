@@ -48,7 +48,7 @@ See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), [ARCHITE
 ## Workflows
 
 - **PR Check**: Validates conventional commit format
-- **Build**: Builds the example app with version injection
+- **Build**: Builds the hello-world app with version injection
 - **Release**: Creates semantic releases and publishes to __CONTAINER_REGISTRY__
 - **Deploy**: Manual deployment by tag and environment
 

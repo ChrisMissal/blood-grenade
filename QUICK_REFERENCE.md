@@ -93,11 +93,11 @@ gh run watch
 # Validate dependency architecture
 npm run depcruise
 
-# Build the example app locally
-cd apps/example
+# Build the hello-world app locally
+cd apps/hello-world
 VERSION="1.0.0-dev" ENVIRONMENT="local" BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") npm run build
 
-# Test the example app
+# Test the hello-world app
 npm run test
 
 # Build all apps
@@ -129,7 +129,7 @@ cat > apps/my-app/package.json << 'EOF'
 }
 EOF
 
-# 3. Create build script (see apps/example/build.js for template)
+# 3. Create build script (see apps/hello-world/build.js for template)
 # 4. Create source files with placeholders
 # 5. Validate architecture: npm run depcruise
 # 6. Update workflows if needed
@@ -181,7 +181,7 @@ git tag -l  # List all tags
 1. Go to Actions tab
 2. Find "Release" workflow run
 3. Check if "Publish to GHCR" job succeeded
-4. Image URL: `__CONTAINER_REGISTRY__/__PROJECT_NAME__/example:1.2.3`
+4. Image URL: `__CONTAINER_REGISTRY__/__PROJECT_NAME__/hello-world:1.2.3`
 
 #### Architecture Validation Failed
 **Fix:** Review dependency rules (see ARCHITECTURE.md)
@@ -227,7 +227,7 @@ gh secret list
 
 **Access in Code:**
 ```javascript
-import { getAppInfo } from '@__PROJECT_NAME__/example';
+import { getAppInfo } from '@__PROJECT_NAME__/hello-world';
 
 const { version, environment, buildTime } = getAppInfo();
 console.log(`Running ${version} in ${environment}`);
