@@ -1,15 +1,3 @@
-export const VERSION = '0.0.0-dev';
-export const ENVIRONMENT = 'development';
-export const BUILD_TIME = '2026-02-09T18:25:57.771Z';
-
-export function getAppInfo() {
-  return {
-    version: VERSION,
-    environment: ENVIRONMENT,
-    buildTime: BUILD_TIME,
-  };
-}
-
-export function greet(name) {
-  return `Hello, ${name}! Running version ${VERSION} in ${ENVIRONMENT}`;
-}
+// This is a stub file for type checking only.
+// The actual dist/index.js is generated during build.
+export * from '../src/index.js';
