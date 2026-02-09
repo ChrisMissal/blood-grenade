@@ -4,6 +4,10 @@ apps/*/node_modules/
 
 # Build outputs
 dist/
+!dist/
+!apps/*/dist/
+apps/*/dist/*
+!apps/*/dist/index.js
 build/
 *.log
 *.tgz
