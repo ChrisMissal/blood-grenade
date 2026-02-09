@@ -20,7 +20,7 @@ npm run depcruise:graph:archi
 The monorepo is organized to support multiple apps, shared packages, and environment-specific configurations:
 
 ```
-blood-grenade/
+__PROJECT_NAME__/
 ├── apps/              # Independent applications
 │   ├── example/       # Example app
 │   │   ├── src/       # Source code (required)
