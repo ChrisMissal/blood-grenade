@@ -3,13 +3,11 @@ import { fileURLToPath } from 'node:url';
 
 export const VERSION = '0.0.0-dev';
 export const ENVIRONMENT = 'development';
-export const BUILD_TIME = '2026-02-09T23:06:45.048Z';
 
 export function getAppInfo() {
   return {
     version: VERSION,
     environment: ENVIRONMENT,
-    buildTime: BUILD_TIME,
   };
 }
 
@@ -19,7 +17,6 @@ export function createHealthResponse() {
     service: 'task-runner',
     version: VERSION,
     environment: ENVIRONMENT,
-    buildTime: BUILD_TIME,
     timestamp: new Date().toISOString(),
   };
 }
@@ -286,7 +283,6 @@ async function main() {
     console.log(`Task Runner Server running on port ${PORT}`);
     console.log(`Environment: ${ENVIRONMENT}`);
     console.log(`Version: ${VERSION}`);
-    console.log(`Build Time: ${BUILD_TIME}`);
     console.log(`\nOpen http://localhost:${PORT} in your browser`);
     console.log(`\nAPI Endpoints:`);
     console.log(`  GET  /              - Web UI`);

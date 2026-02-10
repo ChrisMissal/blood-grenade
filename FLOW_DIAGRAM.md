@@ -93,19 +93,14 @@
          │  export const             │                           │
          │  VERSION =                │  1. Read VERSION env      │
          │    '__VERSION__';         │  2. Read ENVIRONMENT env  │
-         │                           │  3. Generate BUILD_TIME   │
          │  export const             │                           │
-         │  ENVIRONMENT =            │  4. Replace placeholders  │
+         │  ENVIRONMENT =            │  3. Replace placeholders  │
          │    '__ENVIRONMENT__';     │                           │
          │                           │                           │
-         │  export const             │                           │  export const
-         │  BUILD_TIME =             │                           │  VERSION = '1.2.3';
-         │    '__BUILD_TIME__';      │                           │
-         │                           │                           │  export const
-         ├──────────────────────────>│──────────────────────────>│  ENVIRONMENT = 'production';
-                                                                  │
+         ├──────────────────────────>│──────────────────────────>│  export const
+                                                                  │  VERSION = '1.2.3';
                                                                   │  export const
-                                                                  │  BUILD_TIME = '2024-02-07T12:00:00Z';
+                                                                  │  ENVIRONMENT = 'production';
 
 
 ┌─────────────────────────────────────────────────────────────────────────────┐

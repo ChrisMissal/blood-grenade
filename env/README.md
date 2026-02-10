@@ -48,7 +48,6 @@ The following variables are automatically injected during the build process:
 
 - `VERSION` - From package.json or git tags
 - `ENVIRONMENT` - Build target environment
-- `BUILD_TIME` - ISO 8601 timestamp of build
 
 These are replaced in source code via the build.js script in each app.
 
@@ -56,7 +55,7 @@ These are replaced in source code via the build.js script in each app.
 
 ### hello-world (Console App)
 Minimal environment variables needed:
-- `VERSION`, `ENVIRONMENT`, `BUILD_TIME` (auto-injected)
+- `VERSION`, `ENVIRONMENT` (auto-injected)
 
 ### web-app (HTTP Server)
 Additional variables:

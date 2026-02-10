@@ -2,6 +2,5 @@
   "status": "healthy",
   "version": "{{VERSION}}",
   "environment": "{{ENVIRONMENT}}",
-  "buildTime": "{{BUILD_TIME}}",
   "timestamp": "{{TIMESTAMP}}"
 }
