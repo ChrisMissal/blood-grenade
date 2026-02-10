@@ -3,13 +3,11 @@ import { fileURLToPath } from 'node:url';
 
 export const VERSION = '0.0.0-dev';
 export const ENVIRONMENT = 'development';
-export const BUILD_TIME = '2026-02-09T22:50:24.316Z';
 
 export function getAppInfo() {
   return {
     version: VERSION,
     environment: ENVIRONMENT,
-    buildTime: BUILD_TIME,
   };
 }
 
@@ -18,7 +16,6 @@ export function createHealthResponse() {
     status: 'healthy',
     version: VERSION,
     environment: ENVIRONMENT,
-    buildTime: BUILD_TIME,
     timestamp: new Date().toISOString(),
   };
 }
@@ -142,7 +139,6 @@ async function main() {
     console.log(`Web + Jobs Server running on port ${PORT}`);
     console.log(`Environment: ${ENVIRONMENT}`);
     console.log(`Version: ${VERSION}`);
-    console.log(`Build Time: ${BUILD_TIME}`);
     console.log(`\nEndpoints:`);
     console.log(`  GET  /          - Server info`);
     console.log(`  GET  /health    - Health check`);

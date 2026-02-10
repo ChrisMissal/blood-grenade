@@ -1,4 +1,4 @@
-import { getAppInfo, createHealthResponse, createServer, createTask, getTask, getAllTasks, fetchGitHubRepo, listGitHubRepos, runTask, getTaskProgress, VERSION, ENVIRONMENT, BUILD_TIME } from './dist/index.js';
+import { getAppInfo, createHealthResponse, createServer, createTask, getTask, getAllTasks, fetchGitHubRepo, listGitHubRepos, runTask, getTaskProgress, VERSION, ENVIRONMENT } from './dist/index.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -75,10 +75,6 @@ test('ENVIRONMENT constant is exported', () => {
   assertType(ENVIRONMENT, 'string', 'ENVIRONMENT should be a string');
 });
 
-test('BUILD_TIME constant is exported', () => {
-  assertType(BUILD_TIME, 'string', 'BUILD_TIME should be a string');
-});
-
 // === METADATA TEST ===
 console.log('\nMetadata:');
 test('VERSION is replaced during build', () => {
@@ -87,10 +83,6 @@ test('VERSION is replaced during build', () => {
 
 test('ENVIRONMENT is replaced during build', () => {
   assert(ENVIRONMENT !== '__ENVIRONMENT__', 'ENVIRONMENT should be replaced from __ENVIRONMENT__ placeholder');
-});
-
-test('BUILD_TIME is replaced during build', () => {
-  assert(BUILD_TIME !== '__BUILD_TIME__', 'BUILD_TIME should be replaced from __BUILD_TIME__ placeholder');
 });
 
 // === GETAPPINFO TEST ===
@@ -111,11 +103,6 @@ test('has environment property', () => {
   assert('environment' in appInfo, 'getAppInfo should return object with environment property');
 });
 
-test('has buildTime property', () => {
-  const appInfo = getAppInfo();
-  assert('buildTime' in appInfo, 'getAppInfo should return object with buildTime property');
-});
-
 test('version property matches VERSION constant', () => {
   const appInfo = getAppInfo();
   assertEqual(appInfo.version, VERSION, 'version property should match VERSION constant');
@@ -124,11 +111,6 @@ test('version property matches VERSION constant', () => {
 test('environment property matches ENVIRONMENT constant', () => {
   const appInfo = getAppInfo();
   assertEqual(appInfo.environment, ENVIRONMENT, 'environment property should match ENVIRONMENT constant');
-});
-
-test('buildTime property matches BUILD_TIME constant', () => {
-  const appInfo = getAppInfo();
-  assertEqual(appInfo.buildTime, BUILD_TIME, 'buildTime property should match BUILD_TIME constant');
 });
 
 // === TASK MANAGEMENT TEST ===

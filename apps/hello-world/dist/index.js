@@ -3,13 +3,11 @@ import { fileURLToPath } from 'node:url';
 
 export const VERSION = '0.0.0-dev';
 export const ENVIRONMENT = 'development';
-export const BUILD_TIME = '2026-02-09T22:49:12.140Z';
 
 export function getAppInfo() {
   return {
     version: VERSION,
     environment: ENVIRONMENT,
-    buildTime: BUILD_TIME,
   };
 }
 
@@ -24,7 +22,6 @@ function main() {
   console.log('\nApp Info:');
   console.log(`  Version: ${appInfo.version}`);
   console.log(`  Environment: ${appInfo.environment}`);
-  console.log(`  Build Time: ${appInfo.buildTime}`);
 }
 
 // Run if this is the main module

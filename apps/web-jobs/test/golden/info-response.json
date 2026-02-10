@@ -1,5 +1,4 @@
 {
   "version": "{{VERSION}}",
-  "environment": "{{ENVIRONMENT}}",
-  "buildTime": "{{BUILD_TIME}}"
+  "environment": "{{ENVIRONMENT}}"
 }

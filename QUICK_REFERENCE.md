@@ -95,7 +95,7 @@ npm run depcruise
 
 # Build the hello-world app locally
 cd apps/hello-world
-VERSION="1.0.0-dev" ENVIRONMENT="local" BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") npm run build
+VERSION="1.0.0-dev" ENVIRONMENT="local" npm run build
 
 # Test the hello-world app
 npm run test
@@ -220,16 +220,15 @@ gh secret list
 
 ### Environment Variables
 
-**Build Time (set by build workflow):**
+**Build Metadata (set by build workflow):**
 - `VERSION` - Semantic version (e.g., `1.2.3`)
 - `ENVIRONMENT` - Target environment (e.g., `production`)
-- `BUILD_TIME` - ISO timestamp (e.g., `2024-02-07T12:00:00Z`)
 
 **Access in Code:**
 ```javascript
 import { getAppInfo } from '@__PROJECT_NAME__/hello-world';
 
-const { version, environment, buildTime } = getAppInfo();
+const { version, environment } = getAppInfo();
 console.log(`Running ${version} in ${environment}`);
 ```
 

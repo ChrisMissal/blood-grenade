@@ -254,11 +254,10 @@ Each release is immutable and traceable:
 
 ## Environment Variables
 
-### Build Time
+### Build Metadata
 
 - `VERSION`: Semantic version (e.g., `1.2.3`)
 - `ENVIRONMENT`: Target environment (e.g., `production`)
-- `BUILD_TIME`: ISO 8601 timestamp (e.g., `2024-02-07T12:34:56Z`)
 
 ### Runtime
 
@@ -270,7 +269,6 @@ import { getAppInfo } from '@__PROJECT_NAME__/example';
 const info = getAppInfo();
 console.log(info.version);      // "1.2.3"
 console.log(info.environment);  // "production"
-console.log(info.buildTime);    // "2024-02-07T12:34:56Z"
 ```
 
 ## Troubleshooting
