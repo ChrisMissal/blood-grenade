@@ -68,6 +68,11 @@ test('README.md exists', () => {
   assert(exists, 'README.md should exist');
 });
 
+test('build.js exists', () => {
+  const exists = fs.existsSync(path.join(__dirname, 'build.js'));
+  assert(exists, 'build.js should exist');
+});
+
 // === PACKAGE.JSON VALIDATION ===
 console.log('\nPackage.json validation:');
 
@@ -84,6 +89,10 @@ test('name field set correctly', () => {
 
 test('has bin field with ep alias', () => {
   assert(packageJson.bin && packageJson.bin.ep, 'should have ep in bin field');
+});
+
+test('has build script', () => {
+  assert('build' in packageJson.scripts, 'package.json should have build script');
 });
 
 test('has start script', () => {
