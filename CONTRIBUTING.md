@@ -29,6 +29,7 @@ Thank you for your interest in contributing! This guide will help you understand
    ```bash
    npm run typecheck
    npm run depcruise
+npm run check:apps
    npm test
    ```
 
@@ -206,6 +207,7 @@ Before submitting your PR:
 - [ ] All tests pass (`npm test`)
 - [ ] Type checking passes (`npm run typecheck`)
 - [ ] Architecture rules pass (`npm run depcruise`)
+- [ ] App structure check passes (`npm run check:apps`)
 - [ ] Commits validated (`npm run commitlint`)
 - [ ] No merge conflicts with main
 
@@ -286,6 +288,7 @@ This repository enforces architectural rules using `dependency-cruiser`.
 ```bash
 # Validate architecture
 npm run depcruise
+npm run check:apps
 
 # Generate dependency graph
 npm run depcruise:graph

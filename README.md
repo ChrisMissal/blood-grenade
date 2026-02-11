@@ -139,6 +139,7 @@ Build and test all apps at once:
 ```bash
 npm run build --workspaces
 npm run test --workspaces
+npm run check:apps
 ```
 
 ### Adding New Apps

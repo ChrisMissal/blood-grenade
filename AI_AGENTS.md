@@ -62,6 +62,7 @@ npm run typecheck
 npm run depcruise
 npm run commitlint
 npm run depcheck
+npm run check:apps
 ```
 
 Notes:
@@ -92,6 +93,7 @@ If app inventory changes (add/remove/rename app), update these docs/files in the
 - `.github/workflows/README.md`
 - `PIPELINE.md`
 - Any workflow matrix referencing app names
+- Keep app structure checks green via `npm run check:apps`
 
 ## Prompting and Change Hygiene Best Practices
 
