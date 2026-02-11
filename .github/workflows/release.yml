@@ -113,7 +113,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [api, web, worker]
+        service: [daemon, hello-world, task-runner, web-app, web-jobs]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

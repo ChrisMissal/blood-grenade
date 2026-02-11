@@ -104,7 +104,7 @@ export const VERSION = '1.2.3';
 
 **Inputs**:
 - `tag`: Release tag to deploy (e.g., `v1.0.0`)
-- `environment`: Target environment (`development`, `staging`, `production`)
+- `environment`: Target environment (`dev`, `staging`, `prod`)
 
 **Flow**:
 1. **Validate Tag**: Ensures the tag exists
@@ -121,7 +121,7 @@ Actions → Deploy → Run workflow
   Environment: production
 
 # Via GitHub CLI
-gh workflow run deploy.yml -f tag=v1.2.3 -f environment=production
+gh workflow run deploy.yml -f tag=v1.2.3 -f environment=prod
 ```
 
 ## Monorepo Structure
@@ -158,7 +158,7 @@ To fully enable this pipeline, configure branch protection for `main`:
    - ✓ Require approvals (recommended: 1)
    - ✓ Dismiss stale pull request approvals when new commits are pushed
    - ✓ Require status checks to pass before merging
-     - Required checks: `Validate Conventional Commits`, `Validate All Commits`, `Build Hello-world App`
+     - Required checks: `Validate Conventional Commits`, `Validate All Commits`, `Validate Architecture Rules`, `Build Workspace`
    - ✓ Require branches to be up to date before merging
    - ✓ Do not allow bypassing the above settings
    - ✓ Allow squash commits (ONLY)
@@ -264,12 +264,29 @@ Each release is immutable and traceable:
 Access injected metadata:
 
 ```javascript
-import { getAppInfo } from '@__PROJECT_NAME__/example';
+import { getAppInfo } from '@__PROJECT_NAME__/web-app';
 
 const info = getAppInfo();
 console.log(info.version);      // "1.2.3"
 console.log(info.environment);  // "production"
 ```
+
+## Workflow Alignment Notes
+
+The workflows are aligned to current sample apps as follows:
+
+- Build/test validation runs across all npm workspaces (`npm run build --workspaces`, `npm run test --workspaces --if-present`).
+- Container publish/deploy matrices target current app directories:
+  - `daemon`
+  - `hello-world`
+  - `task-runner`
+  - `web-app`
+  - `web-jobs`
+
+When adding or renaming apps, update these workflow files together:
+- `.github/workflows/build.yml`
+- `.github/workflows/release.yml`
+- `.github/workflows/deploy.yml`
 
 ## Troubleshooting
 
