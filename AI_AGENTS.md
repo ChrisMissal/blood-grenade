@@ -66,6 +66,7 @@ npm run depcheck
 
 Notes:
 - `npm run build` and `npm test` execute workspace scripts.
+- `npm run depcheck` is the standard script alias for dependency-cruiser checks.
 - Use `npm run <script> --workspaces --if-present` style only when adding optional scripts.
 - If a change affects workflows, update docs in the same PR (see `.github/workflows/README.md`).
 

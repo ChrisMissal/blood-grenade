@@ -1,8 +1,21 @@
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-console.log('Running dependency check...\n');
+const appDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(appDir, '..', '..');
+const appName = path.basename(appDir);
 
-execSync('npm exec depcheck -- --ignore-patterns=dist', {
+console.log('Running app dependency checks with dependency-cruiser...\n');
+
+execFileSync('npm', [
+  'exec',
+  'depcruise',
+  '--',
+  '--config',
+  '.dependency-cruiser.cjs',
+  `apps/${appName}`,
+], {
+  cwd: repoRoot,
   stdio: 'inherit',
-  shell: true,
 });

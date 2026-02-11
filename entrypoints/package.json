@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node src/cli.js",
     "test": "node test.js",
-    "typecheck": "node typecheck.js"
+    "typecheck": "node typecheck.js",
+    "depcheck": "node depcheck.js"
   },
   "keywords": [
     "cli",
