@@ -33,7 +33,7 @@ jobs:
 
           echo "Validating commits from $BASE_SHA to $HEAD_SHA"
 
-          BASE_SHA="$BASE_SHA" HEAD_SHA="$HEAD_SHA" npm run lint || {
+          BASE_SHA="$BASE_SHA" HEAD_SHA="$HEAD_SHA" npm run commitlint || {
             echo "::error::Commitlint validation failed. Please ensure all commits follow conventional commit format."
             exit 1
           }

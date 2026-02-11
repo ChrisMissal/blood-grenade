@@ -1,4 +1,4 @@
-import { execSync, execFileSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 
 const resolveCommitRange = () => {
   const baseFromEnv = process.env.BASE_SHA;
@@ -23,7 +23,6 @@ const { base, head } = resolveCommitRange();
 
 console.log(`Validating commits from ${base} to ${head}`);
 
-execSync(`npm exec commitlint -- --from ${base} --to ${head} --verbose`, {
+execFileSync('npm', ['exec', 'commitlint', '--', '--from', base, '--to', head, '--verbose'], {
   stdio: 'inherit',
-  shell: true,
 });
