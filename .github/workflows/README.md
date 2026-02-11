@@ -20,7 +20,7 @@ This document explains how workflow expectations map to the current sample apps.
   - `npm run depcruise`
 - Validate workspace type checks and dependency checks:
   - `npm run typecheck`
-  - `npm run depcheck`
+  - `npm run depcheck` (depcheck script alias for dependency-cruiser checks)
 
 ## Container publication/deployment expectations
 

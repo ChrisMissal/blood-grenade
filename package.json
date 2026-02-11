@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
-    "depcheck": "npm run depcheck --workspaces",
+    "depcheck": "node scripts/depcheck.js",
     "commitlint": "node scripts/commitlint.js",
     "test": "npm run test --workspaces",
     "typecheck": "node scripts/typecheck.js && npm run typecheck --workspaces",

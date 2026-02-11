@@ -98,6 +98,10 @@ test('has typecheck script', () => {
   assert('typecheck' in packageJson.scripts, 'package.json should have typecheck script');
 });
 
+test('has depcheck script', () => {
+  assert('depcheck' in packageJson.scripts, 'package.json should have depcheck script');
+});
+
 test('packageManager is npm', () => {
   assert(packageJson.packageManager && packageJson.packageManager.startsWith('npm'), 
     'packageManager should be locked to npm');
