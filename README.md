@@ -1,6 +1,6 @@
 # __PROJECT_NAME__
 
-Reusable template monorepo with an automated release pipeline for Node + Docker apps.
+Template monorepo for Node.js services with automated validation, release, and deployment workflows.
 
 ## Features
 
@@ -19,6 +19,17 @@ Reusable template monorepo with an automated release pipeline for Node + Docker 
 
 See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), [ARCHITECTURE.md](ARCHITECTURE.md), and [CONTRIBUTING.md](CONTRIBUTING.md) for complete documentation.
 
+### Validation Commands
+
+Run these commands from the repository root before opening a PR:
+
+```bash
+npm run typecheck
+npm test
+npm run depcruise
+npm run commitlint
+```
+
 ### Template Setup
 
 1. Replace placeholders (or run the helper script):
@@ -35,7 +46,7 @@ See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), [ARCHITE
 1. Create feature branch: `git checkout -b feat/my-feature`
 2. Make changes and commit (any format)
 3. Create PR with conventional title: `feat: add new feature`
-4. Squash merge to `releases/**`
+4. Squash merge to `main` (or your configured release branch strategy)
 5. Automatic release created (if applicable)
 
 ### Deploy a Release
@@ -48,7 +59,7 @@ See [PIPELINE.md](PIPELINE.md), [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md), [ARCHITE
 ## Workflows
 
 - **PR Check**: Validates conventional commit format
-- **Build**: Builds the hello-world app with version injection
+- **Build**: Builds workspace apps with version injection
 - **Release**: Creates semantic releases and publishes to __CONTAINER_REGISTRY__
 - **Deploy**: Manual deployment by tag and environment
 
@@ -59,6 +70,7 @@ This monorepo contains the following applications:
 | App | Location | Type | Description |
 |-----|----------|------|-------------|
 | **hello-world** | [`apps/hello-world`](apps/hello-world) | Starter Template | Console app demonstrating the build pipeline, testing, and release structure. Use as a template for new apps. |
+| **daemon** | [`apps/daemon`](apps/daemon) | Long-running Worker | Non-HTTP daemon baseline with lifecycle logging and graceful shutdown behavior. |
 | **web-app** | [`apps/web-app`](apps/web-app) | Web Server | HTTP server with health checks and metadata endpoints. Demonstrates web service patterns with graceful shutdown. |
 | **web-jobs** | [`apps/web-jobs`](apps/web-jobs) | Web + Background Jobs | HTTP server with background job processing. Demonstrates job queue management, async processing, and API endpoints for job control. |
 | **task-runner** | [`apps/task-runner`](apps/task-runner) | Task Executor + Web UI | Execute tasks with editable arguments on Docker images, fetch and run code from public GitHub repositories, and monitor progress via single-page web application with real-time output display. |
@@ -89,6 +101,16 @@ Access the server at `http://localhost:3000`:
 - `GET /` – Root endpoint
 - `GET /health` – Health check with status and metadata
 - `GET /info` – App information (version, environment, build time)
+
+### daemon (Long-running Process)
+
+```bash
+cd apps/daemon
+npm run build
+node dist/index.js
+```
+
+Output: periodic heartbeat logs with graceful shutdown handling when the process receives a termination signal.
 
 ### web-jobs (HTTP Server + Job Queue)
 
@@ -150,7 +172,7 @@ To add a new app to the monorepo:
 2. Update `package.json` with your new app name and description
 3. Update `src/index.js` with your app's business logic
 4. Update `version.js` output message
-5. Run tests: `npm run test` (34 structural tests will validate the setup)
+5. Run tests: `npm test` (structural tests validate the setup)
 6. Commit with conventional format: `feat: add new-app`
 
 The entire build pipeline, testing, linting, and release automation will work automatically for your new app.

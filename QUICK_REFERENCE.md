@@ -90,6 +90,15 @@ gh run watch
 ### Local Development
 
 ```bash
+# Install dependencies (once per checkout)
+npm install
+
+# Run required quality gates
+npm run typecheck
+npm test
+npm run depcruise
+npm run commitlint
+
 # Validate dependency architecture
 npm run depcruise
 
@@ -97,7 +106,7 @@ npm run depcruise
 cd apps/hello-world
 VERSION="1.0.0-dev" ENVIRONMENT="local" npm run build
 
-# Test the hello-world app
+# Test the current app workspace
 npm run test
 
 # Build all apps
@@ -180,7 +189,7 @@ git tag -l  # List all tags
 **Fix:** Check if release workflow succeeded
 1. Go to Actions tab
 2. Find "Release" workflow run
-3. Check if "Publish to GHCR" job succeeded
+3. Check if "Publish Containers" job succeeded
 4. Image URL: `__CONTAINER_REGISTRY__/__PROJECT_NAME__/hello-world:1.2.3`
 
 #### Architecture Validation Failed
@@ -241,7 +250,7 @@ console.log(`Running ${version} in ${environment}`);
 5. ✅ Review auto-generated release notes before deployment
 6. ✅ Use GitHub Environments for production protection
 7. ✅ Never force-push to main branch
-8. ✅ Run local builds before pushing
+8. ✅ Run local checks before pushing (`typecheck`, `test`, `depcruise`, `commitlint`)
 9. ✅ Validate architecture rules before committing (npm run depcruise)
 10. ✅ Keep apps independent - use packages for shared code
 11. ✅ Keep source code in src/ directories

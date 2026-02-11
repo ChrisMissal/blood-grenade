@@ -37,7 +37,7 @@ The pipeline is built around several key principles:
 ### 2. Build (`build.yml`)
 
 **Trigger**: 
-- Push to `main` or `releases/**` branches
+- Push to `main` or `releases/**` branches (build validation)
 - Pull requests to `main`
 - Called by other workflows
 
@@ -79,17 +79,13 @@ export const VERSION = '1.2.3';
 2. **Create Release**: Creates GitHub Release with release notes
 3. **Update Changelog**: Appends entries to `CHANGELOG.md`
 4. **Build Artifacts**: Builds with production metadata
-5. **Publish Images**: Publishes Docker images to __CONTAINER_REGISTRY__
+5. **Publish Images**: Publishes service Docker images to __CONTAINER_REGISTRY__
 
 **Outputs**:
 - Creates git tag (e.g., `v1.2.3`)
 - Creates GitHub Release with notes
 - Updates `CHANGELOG.md` in the release commit
-- Publishes Docker image to __CONTAINER_REGISTRY__ with tags:
-  - `__CONTAINER_REGISTRY__/owner/repo/hello-world:1.2.3`
-  - `__CONTAINER_REGISTRY__/owner/repo/hello-world:1.2`
-  - `__CONTAINER_REGISTRY__/owner/repo/hello-world:1`
-  - `__CONTAINER_REGISTRY__/owner/repo/hello-world:latest`
+- Publishes Docker images for each service in the release matrix (`daemon`, `hello-world`, `task-runner`, `web-app`, `web-jobs`) to __CONTAINER_REGISTRY__ with semantic tags (for example `1.2.3`, `1.2`, `1`, and `latest`).
 
 **Version Bumping**:
 - `feat`: Minor version bump (1.2.3 → 1.3.0)
@@ -135,14 +131,11 @@ __PROJECT_NAME__/
 │       ├── release.yml       # Semantic release + publish
 │       └── deploy.yml        # Manual deployment
 ├── apps/
-│   └── hello-world/
-│       ├── src/
-│       │   └── index.js      # Source with placeholders
-│       ├── dist/             # Built output (git-ignored)
-│       ├── build.js          # Build script with injection
-│       ├── test.js           # Test script
-│       ├── package.json      # Package config
-│       └── Dockerfile        # Container image
+│   ├── hello-world/
+│   ├── web-app/
+│   ├── web-jobs/
+│   ├── task-runner/
+│   └── daemon/               # Additional deployable service examples
 ├── .releaserc.json           # Semantic-release config
 ├── .gitignore
 └── README.md
