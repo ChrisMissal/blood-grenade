@@ -1,14 +1,14 @@
 {
   "name": "@__PROJECT_NAME__/entrypoints",
   "version": "0.0.0-development",
-  "description": "CLI for managing entrypoints, templates, and configuration across all applications",
+  "description": "CLI app for managing entrypoints, templates, and configuration across applications",
   "type": "module",
   "bin": {
-    "ep": "./src/cli.js"
+    "entrypoints": "./src/index.js"
   },
   "scripts": {
     "build": "node build.js",
-    "start": "node src/cli.js",
+    "start": "node src/index.js",
     "test": "node test.js",
     "typecheck": "node typecheck.js",
     "depcheck": "node depcheck.js"

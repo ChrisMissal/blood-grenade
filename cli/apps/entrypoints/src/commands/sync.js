@@ -10,10 +10,10 @@ export async function execute(args, context) {
 
   if (helpRequested) {
     console.log(`
-ep sync - Synchronize environment and output configuration
+bg entrypoints sync - Synchronize environment and output configuration
 
 USAGE:
-  ep sync [options]
+  bg entrypoints sync [options]
 
 OPTIONS:
   --dry-run       Preview changes without applying them
@@ -28,9 +28,9 @@ DESCRIPTION:
   - Aligning configuration between app templates
 
 EXAMPLES:
-  ep sync                    Run full sync
-  ep sync --dry-run          Preview changes
-  ep sync --verbose          Show detailed operations
+  bg entrypoints sync                    Run full sync
+  bg entrypoints sync --dry-run          Preview changes
+  bg entrypoints sync --verbose          Show detailed operations
 `);
     return;
   }

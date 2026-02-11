@@ -7,7 +7,8 @@
   "packageManager": "npm@10.7.0",
   "workspaces": [
     "apps/*",
-    "entrypoints"
+    "cli",
+    "cli/apps/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
@@ -18,7 +19,7 @@
     "package": "npm run package --workspaces",
     "version": "npm run version --workspaces",
     "tag": "npm run tag --workspaces",
-    "ep": "node entrypoints/src/cli.js",
+    "ep": "node cli/src/cli.js",
     "depcruise": "depcruise apps packages",
     "depcruise:graph": "depcruise apps packages --output-type dot | dot -T svg > dependency-graph.svg",
     "depcruise:graph:archi": "depcruise apps packages --output-type archi | dot -T svg > architecture.svg",

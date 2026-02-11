@@ -9,10 +9,10 @@ export async function execute(args, context) {
 
   if (helpRequested) {
     console.log(`
-ep list - List available applications, templates, and entrypoints
+bg entrypoints list - List available applications, templates, and entrypoints
 
 USAGE:
-  ep list [options]
+  bg entrypoints list [options]
 
 OPTIONS:
   --verbose, -v   Show detailed configuration for each app
@@ -26,8 +26,8 @@ DESCRIPTION:
   - Available templates
 
 EXAMPLES:
-  ep list           Show all apps
-  ep list --verbose Show detailed configuration info
+  bg entrypoints list           Show all apps
+  bg entrypoints list --verbose Show detailed configuration info
 `);
     return;
   }
@@ -108,7 +108,7 @@ EXAMPLES:
       }
     }
 
-    logSuccess(`Listing complete. Run "ep list --verbose" for more details.`);
+    logSuccess(`Listing complete. Run "bg entrypoints list --verbose" for more details.`);
   } catch (error) {
     handleError(`Failed to list applications: ${error.message}`);
     process.exit(1);
