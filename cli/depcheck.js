@@ -2,10 +2,10 @@ import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const entrypointsDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(entrypointsDir, '..');
+const cliDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(cliDir, '..');
 
-console.log('Running entrypoints dependency checks with dependency-cruiser...\n');
+console.log('Running cli dependency checks with dependency-cruiser...\n');
 
 execFileSync('npm', [
   'exec',
@@ -13,7 +13,7 @@ execFileSync('npm', [
   '--',
   '--config',
   '.dependency-cruiser.cjs',
-  'entrypoints',
+  'cli',
 ], {
   cwd: repoRoot,
   stdio: 'inherit',
