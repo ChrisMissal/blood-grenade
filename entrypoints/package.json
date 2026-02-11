@@ -7,6 +7,7 @@
     "ep": "./src/cli.js"
   },
   "scripts": {
+    "build": "node build.js",
     "start": "node src/cli.js",
     "test": "node test.js",
     "typecheck": "node typecheck.js",
