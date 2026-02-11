@@ -135,6 +135,13 @@ test('health response matches expected format', () => {
   assert(health.service === 'daemon', 'Health service should be daemon');
   assert(typeof health.status === 'string', 'Status should be string');
   assert(typeof health.timestamp === 'string', 'Timestamp should be string');
+
+  const goldenPath = path.join(__dirname, 'test', 'golden', 'health-response.json');
+  assertMatchesGolden(JSON.stringify(health, null, 2), goldenPath, {
+    VERSION,
+    ENVIRONMENT,
+    TIMESTAMP: health.timestamp,
+  }, 'Health response should match golden file');
 });
 
 // === SUMMARY ===

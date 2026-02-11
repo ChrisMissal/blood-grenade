@@ -23,6 +23,14 @@ const requiredFiles = [
   path.join('dist', 'index.js'),
 ];
 
+const requiredScripts = {
+  build: 'node build.js',
+  test: 'node test.js',
+  typecheck: 'node typecheck.js',
+  commitlint: 'node commitlint.js',
+  depcheck: 'node depcheck.js',
+};
+
 const appNames = fs.readdirSync(appsDir, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
@@ -43,6 +51,31 @@ for (const appName of appNames) {
     continue;
   }
 
+  const packageJson = JSON.parse(fs.readFileSync(path.join(appPath, 'package.json'), 'utf8'));
+  const scripts = packageJson.scripts || {};
+  const scriptMismatches = [];
+
+  for (const [scriptName, expectedCommand] of Object.entries(requiredScripts)) {
+    const actual = scripts[scriptName];
+    if (!actual) {
+      scriptMismatches.push(`${scriptName} (missing)`);
+      continue;
+    }
+
+    if (actual !== expectedCommand) {
+      scriptMismatches.push(`${scriptName} (expected: "${expectedCommand}", got: "${actual}")`);
+    }
+  }
+
+  if (scriptMismatches.length > 0) {
+    console.error(`❌ ${appName}: package script mismatches`);
+    for (const mismatch of scriptMismatches) {
+      console.error(`   - ${mismatch}`);
+    }
+    failures++;
+    continue;
+  }
+
   const hasTestDir = fs.existsSync(path.join(appPath, 'test'));
   const hasGoldenDir = fs.existsSync(path.join(appPath, 'test', 'golden'));
 
@@ -56,8 +89,10 @@ for (const appName of appNames) {
 }
 
 if (failures > 0) {
-  console.error(`\nFound ${failures} app structure issue(s).`);
+  console.error(`
+Found ${failures} app structure issue(s).`);
   process.exit(1);
 }
 
-console.log(`\nAll ${appNames.length} apps have aligned structure.`);
+console.log(`
+All ${appNames.length} apps have aligned structure.`);

@@ -1,0 +1,7 @@
+{
+  "status": "healthy",
+  "service": "daemon",
+  "version": "{{VERSION}}",
+  "environment": "{{ENVIRONMENT}}",
+  "timestamp": "{{TIMESTAMP}}"
+}
