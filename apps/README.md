@@ -25,7 +25,7 @@ For architecture constraints, see [ARCHITECTURE.md](../ARCHITECTURE.md).
 
 Most apps include:
 - `src/index.js` – entrypoint and exported helpers,
-- `build.js`, `test.js`, `lint.js`, `typecheck.js`, `depcheck.js` – automation scripts,
+- `build.js`, `test.js`, `commitlint.js`, `typecheck.js`, `depcheck.js` – automation scripts,
 - `Dockerfile` – container packaging,
 - `package.json` + `tsconfig.json` – local app config.
 

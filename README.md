@@ -154,6 +154,15 @@ To add a new app to the monorepo:
 
 The entire build pipeline, testing, linting, and release automation will work automatically for your new app.
 
+## AI Agent Guidance
+
+If you use AI coding assistants (Codex, Copilot, Claude, etc.), start with [AI_AGENTS.md](AI_AGENTS.md).
+Tool-specific entry points:
+
+- [AGENTS.md](AGENTS.md) for Codex/OpenAI-compatible agents
+- [.github/copilot-instructions.md](.github/copilot-instructions.md) for GitHub Copilot
+- [CLAUDE.md](CLAUDE.md) for Claude Code
+
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details on:

@@ -170,7 +170,7 @@ Commits are validated automatically in PRs using:
 
 You can validate locally before pushing:
 ```bash
-npm run lint
+npm run commitlint
 ```
 
 ## Pull Request Process
@@ -206,7 +206,7 @@ Before submitting your PR:
 - [ ] All tests pass (`npm test`)
 - [ ] Type checking passes (`npm run typecheck`)
 - [ ] Architecture rules pass (`npm run depcruise`)
-- [ ] Commits validated (`npm run lint`)
+- [ ] Commits validated (`npm run commitlint`)
 - [ ] No merge conflicts with main
 
 ### Review Process
@@ -250,6 +250,17 @@ Before submitting your PR:
 - Maintain or improve code coverage
 - Use descriptive test names
 - Follow existing test patterns
+
+## AI-Assisted Contributions
+
+AI-assisted changes are welcome, but contributors remain responsible for correctness and policy compliance.
+
+When using Codex, Copilot, Claude, or similar agents:
+
+- Start with [AI_AGENTS.md](AI_AGENTS.md) for repository-specific operating guidance
+- Use the tool-specific entry file when available (`AGENTS.md`, `.github/copilot-instructions.md`, `CLAUDE.md`)
+- Run and report required validations (`npm run typecheck`, `npm test`, `npm run depcruise`)
+- Keep prompts and generated changes focused to one logical concern per PR
 
 ## Testing
 
