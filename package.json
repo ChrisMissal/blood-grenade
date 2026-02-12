@@ -13,6 +13,7 @@
     "build": "npm run repo -- build",
     "test": "npx jest --config tests/jest.config.js",
     "typecheck": "npm run repo -- typecheck",
+    "typecheck:all": "npm run typecheck --workspaces",
     "package": "npm run repo -- package",
     "version": "npm run repo -- version",
     "tag": "npm run repo -- tag",
