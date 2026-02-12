@@ -329,7 +329,8 @@ if (mainModule) {
         const server = await createServer();
         server.listen(PORT, async () => {
           try {
-            const actualPort = server.address().port;
+            const address = server.address();
+            const actualPort = typeof address === 'object' && address ? address.port : 3000;
             const http = await import('node:http');
             const req = http.request({
               hostname: '127.0.0.1',
