@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  task-runner:
+    build:
+      context: ../../apps/task-runner
+    ports:
+      - "4000:3000"
+    environment:
+      - NODE_ENV=test
+      - PORT=3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+  web-app:
+    build:
+      context: ../../apps/web-app
+    ports:
+      - "4001:3000"
+    environment:
+      - NODE_ENV=test
+      - PORT=3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+  web-jobs:
+    build:
+      context: ../../apps/web-jobs
+    ports:
+      - "4002:3000"
+    environment:
+      - NODE_ENV=test
+      - PORT=3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3

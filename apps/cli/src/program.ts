@@ -2,7 +2,9 @@ import { Command } from "commander";
 import { registerBuildCommand } from "./commands/build.js";
 import { registerTestCommand } from "./commands/test.js";
 import { registerTypecheckCommand } from "./commands/typecheck.js";
+
 import { registerDepcruiseCommand } from "./commands/depcruise.js";
+import { registerDockerComposeCommand } from "./commands/docker-compose.js";
 
 export function buildProgram(): Command {
   const program = new Command();
@@ -11,5 +13,6 @@ export function buildProgram(): Command {
   registerTestCommand(program);
   registerTypecheckCommand(program);
   registerDepcruiseCommand(program);
+  registerDockerComposeCommand(program);
   return program;
 }
