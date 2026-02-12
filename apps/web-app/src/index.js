@@ -1,3 +1,5 @@
+
+import { Command } from 'commander';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -52,42 +54,46 @@ export async function createServer() {
   return server;
 }
 
-// Main entry point
-async function main() {
-  const PORT = process.env.PORT || 3000;
-  const server = await createServer();
-  
-  server.listen(PORT, () => {
-    console.log(`Web App Server running on port ${PORT}`);
-    console.log(`Environment: ${ENVIRONMENT}`);
-    console.log(`Version: ${VERSION}`);
-    console.log(`\nEndpoints:`);
-    console.log(`  GET /        - Server info`);
-    console.log(`  GET /health  - Health check`);
-    console.log(`  GET /info    - App metadata`);
-  });
 
-  // Graceful shutdown
-  const shutdown = () => {
-    console.log('\nShutting down gracefully...');
-    server.close(() => {
-      console.log('Server closed');
-      process.exit(0);
+// Commander CLI setup
+const program = new Command();
+program
+  .name('web-app')
+  .description('Web App Server')
+  .version(VERSION, '-v, --version', 'output the current version');
+
+program
+  .command('serve')
+  .description('Start the web server')
+  .option('-p, --port <port>', 'Port to listen on', process.env.PORT || '3000')
+  .action(async (opts) => {
+    const PORT = opts.port || process.env.PORT || 3000;
+    const server = await createServer();
+    server.listen(PORT, () => {
+      console.log(`Web App Server running on port ${PORT}`);
+      console.log(`Environment: ${ENVIRONMENT}`);
+      console.log(`Version: ${VERSION}`);
+      console.log(`\nEndpoints:`);
+      console.log(`  GET /        - Server info`);
+      console.log(`  GET /health  - Health check`);
+      console.log(`  GET /info    - App metadata`);
     });
-  };
-
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
-
-  return server;
-}
-
-// Run if this is the main module
-const __filename = fileURLToPath(import.meta.url);
-const mainModule = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename);
-if (mainModule) {
-  main().catch((err) => {
-    console.error('Failed to start server:', err);
-    process.exit(1);
+    // Graceful shutdown
+    const shutdown = () => {
+      console.log('\nShutting down gracefully...');
+      server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+      });
+    };
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
   });
+
+// Show help if no command is provided
+if (process.argv.length <= 2) {
+  program.outputHelp();
+  process.exit(0);
 }
+
+program.parseAsync(process.argv);

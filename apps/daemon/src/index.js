@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Command } from 'commander';
 
 export const VERSION = '__VERSION__';
 export const ENVIRONMENT = '__ENVIRONMENT__';
@@ -21,20 +22,24 @@ export function createHealthResponse() {
   };
 }
 
-// Main entry point
 async function main() {
-  console.log(`Daemon Service - Version: ${VERSION}, Environment: ${ENVIRONMENT}`);
-
-  // Graceful shutdown
-  const shutdown = () => {
-    console.log('\nShutting down gracefully...');
-  };
-
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
+  const program = new Command();
+  program
+    .name('daemon')
+    .description('Background Daemon Service')
+    .version(VERSION)
+    .action(() => {
+      console.log(`Daemon Service - Version: ${VERSION}, Environment: ${ENVIRONMENT}`);
+      // Graceful shutdown
+      const shutdown = () => {
+        console.log('\nShutting down gracefully...');
+      };
+      process.on('SIGTERM', shutdown);
+      process.on('SIGINT', shutdown);
+    });
+  await program.parseAsync(process.argv);
 }
 
-// Run if this is the main module
 const __filename = fileURLToPath(import.meta.url);
 const mainModule = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename);
 if (mainModule) {

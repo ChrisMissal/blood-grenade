@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@project/cli/*": ["apps/cli/src/*"],
+      "@project/daemon/*": ["apps/daemon/src/*"],
+      "@project/hello-world/*": ["apps/hello-world/src/*"],
+      "@project/task-runner/*": ["apps/task-runner/src/*"],
+      "@project/web-app/*": ["apps/web-app/src/*"],
+      "@project/web-jobs/*": ["apps/web-jobs/src/*"]
+    },
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  }
+}

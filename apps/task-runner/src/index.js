@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Command } from 'commander';
 
 export const VERSION = '__VERSION__';
 export const ENVIRONMENT = '__ENVIRONMENT__';
@@ -315,8 +316,50 @@ async function main() {
 const __filename = fileURLToPath(import.meta.url);
 const mainModule = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename);
 if (mainModule) {
-  main().catch((err) => {
-    console.error('Failed to start server:', err);
-    process.exit(1);
-  });
+  const program = new Command();
+  program
+    .name('task-runner')
+    .description('Task Runner App')
+    .version(VERSION)
+    .option('--port <port>', 'Port to run the server on', process.env.PORT || '3000')
+    .option('--healthcheck', 'Start server, check /health, then exit')
+    .action(async (opts) => {
+      if (opts.healthcheck) {
+        const PORT = opts.port || process.env.PORT || 3000;
+        const server = await createServer();
+        server.listen(PORT, async () => {
+          try {
+            const actualPort = server.address().port;
+            const http = await import('node:http');
+            const req = http.request({
+              hostname: '127.0.0.1',
+              port: actualPort,
+              path: '/health',
+              method: 'GET',
+            }, (res) => {
+              let data = '';
+              res.on('data', chunk => data += chunk);
+              res.on('end', () => {
+                console.log('Health check response:', data);
+                server.close(() => process.exit(0));
+              });
+            });
+            req.on('error', (err) => {
+              console.error('Health check failed:', err);
+              server.close(() => process.exit(1));
+            });
+            req.end();
+          } catch (err) {
+            console.error('Health check error:', err);
+            server.close(() => process.exit(1));
+          }
+        });
+      } else {
+        main().catch((err) => {
+          console.error('Failed to start server:', err);
+          process.exit(1);
+        });
+      }
+    });
+  program.parse(process.argv);
 }
