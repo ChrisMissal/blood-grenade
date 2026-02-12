@@ -9,16 +9,18 @@
     "apps/*"
   ],
   "scripts": {
-     "repo": "node apps/cli/dist/index.js",
-     "build": "npm run build --workspaces",
-     "test": "npx jest --config tests/jest.config.js",
-     "typecheck": "npm run typecheck --workspaces",
-     "depcheck": "npm run depcheck --workspaces",
-     "depcruise": "npm run depcruise --workspaces",
-     "check": "npm run typecheck --workspaces && npm run depcheck --workspaces && npm run depcruise --workspaces && npm test",
-     "doctor": "npm run repo -- doctor",
-     "commitlint": "node scripts/commitlint.js",
-     "check:apps": "node scripts/check-app-structure.js"
+    "repo": "node apps/cli/dist/index.js",
+    "build": "npm run build --workspaces",
+    "test": "npx jest --config tests/jest.config.js",
+    "typecheck": "npm run typecheck --workspaces",
+    "depcheck": "npm run depcheck --workspaces",
+    "depcruise": "npm run depcruise --workspaces",
+     "syncpack:check": "npx syncpack list-mismatches",
+     "syncpack:fix": "npx syncpack fix-mismatches",
+     "check": "npm run syncpack:check && npm run typecheck --workspaces && npm run depcheck --workspaces && npm run depcruise --workspaces && npm test",
+    "doctor": "npm run repo -- doctor",
+    "commitlint": "node scripts/commitlint.js",
+    "check:apps": "node scripts/check-app-structure.js"
   },
   "keywords": [
     "monorepo",
@@ -46,6 +48,7 @@
     "dependency-cruiser": "^17.3.8",
     "jest": "^30.2.0",
     "semantic-release": "^25.0.3",
+    "syncpack": "^13.0.4",
     "typescript": "^5.7.3"
   },
   "dependencies": {

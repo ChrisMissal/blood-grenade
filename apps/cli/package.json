@@ -15,7 +15,7 @@
       ,"depcheck": "echo 'cli depcheck stub' && exit 0"
   },
   "dependencies": {
-    "commander": "^11.1.0",
+    "commander": "^14.0.3",
     "execa": "^8.0.1"
   }
 }

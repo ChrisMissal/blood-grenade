@@ -22,6 +22,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "commander": "^11.1.0"
+    "commander": "^14.0.3"
   }
 }
