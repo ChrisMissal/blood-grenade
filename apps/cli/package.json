@@ -12,6 +12,7 @@
     "test": "echo 'cli test stub' && exit 0",
     "depcruise": "echo 'cli depcruise stub' && exit 0",
     "typecheck": "echo 'cli typecheck stub' && exit 0"
+      ,"depcheck": "echo 'cli depcheck stub' && exit 0"
   },
   "dependencies": {
     "commander": "^11.1.0",

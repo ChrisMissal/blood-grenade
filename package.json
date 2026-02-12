@@ -9,19 +9,16 @@
     "apps/*"
   ],
   "scripts": {
-    "repo": "node apps/cli/dist/index.js",
-    "build": "npm run repo -- build",
-    "test": "npx jest --config tests/jest.config.js",
-    "typecheck": "npm run repo -- typecheck",
-    "typecheck:all": "npm run typecheck --workspaces",
-    "package": "npm run repo -- package",
-    "version": "npm run repo -- version",
-    "tag": "npm run repo -- tag",
-    "depcruise": "npm run repo -- depcruise",
-    "doctor": "npm run repo -- doctor",
-    "commitlint": "node scripts/commitlint.js",
-    "depcheck": "node scripts/depcheck.js",
-    "check:apps": "node scripts/check-app-structure.js"
+     "repo": "node apps/cli/dist/index.js",
+     "build": "npm run build --workspaces",
+     "test": "npx jest --config tests/jest.config.js",
+     "typecheck": "npm run typecheck --workspaces",
+     "depcheck": "npm run depcheck --workspaces",
+     "depcruise": "npm run depcruise --workspaces",
+     "check": "npm run typecheck --workspaces && npm run depcheck --workspaces && npm run depcruise --workspaces && npm test",
+     "doctor": "npm run repo -- doctor",
+     "commitlint": "node scripts/commitlint.js",
+     "check:apps": "node scripts/check-app-structure.js"
   },
   "keywords": [
     "monorepo",
