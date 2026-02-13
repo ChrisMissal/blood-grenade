@@ -1,6 +1,6 @@
 import path from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
-import execa from "execa";
+import { execa } from "execa";
 import { TransformationModel } from "./model.js";
 import { generateTransformationMarkdown } from "./markdown.js";
 

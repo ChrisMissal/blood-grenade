@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import execa from "execa";
+import { execa } from "execa";
 
 export function registerBuildCommand(program: Command) {
   program
