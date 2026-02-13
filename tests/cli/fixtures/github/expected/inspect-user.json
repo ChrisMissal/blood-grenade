@@ -1,0 +1,55 @@
+{
+  "results": [
+    {
+      "integrationName": "github",
+      "target": {
+        "sourcePath": "/workspace/blood-grenade/test-profile",
+        "includeHidden": false,
+        "maxDepth": 4,
+        "detectApps": true
+      },
+      "inspectedAt": "<INSPECTED_AT>",
+      "repositoryRoot": "https://github.com/test-profile",
+      "detectedApplications": [
+        {
+          "rootPath": "https://github.com/test-profile/node-service",
+          "name": "node-service",
+          "descriptorFile": "github-repository",
+          "type": "node-app",
+          "languageRuntimeGuess": "nodejs",
+          "buildSystemGuess": "npm",
+          "statusHint": "active",
+          "lastModifiedAt": "2026-01-01T12:00:00.000Z",
+          "confidence": 0.88,
+          "notes": [
+            "Detected from primary language TypeScript",
+            "Default branch: main",
+            "Visibility: public",
+            "Stars: 13"
+          ]
+        },
+        {
+          "rootPath": "https://github.com/test-profile/infra-stack",
+          "name": "infra-stack",
+          "descriptorFile": "github-repository",
+          "type": "terraform-stack",
+          "languageRuntimeGuess": "terraform",
+          "buildSystemGuess": "terraform",
+          "statusHint": "halted",
+          "lastModifiedAt": "2025-12-12T08:30:00.000Z",
+          "confidence": 0.78,
+          "notes": [
+            "Detected from primary language HCL",
+            "Default branch: main",
+            "Visibility: private",
+            "Stars: 0"
+          ]
+        }
+      ],
+      "warnings": [
+        "GitHub inspection uses repository metadata heuristics and may not reflect full build/runtime requirements."
+      ],
+      "errors": []
+    }
+  ]
+}

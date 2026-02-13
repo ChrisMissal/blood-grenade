@@ -5,6 +5,7 @@ import { registerTypecheckCommand } from "./commands/typecheck.js";
 
 import { registerDepcruiseCommand } from "./commands/depcruise.js";
 import { registerDockerComposeCommand } from "./commands/docker-compose.js";
+import { registerInspectCommand } from "./commands/inspect.js";
 import { registerTransformCommand } from "./commands/transform.js";
 
 export function buildProgram(): Command {
@@ -16,6 +17,7 @@ export function buildProgram(): Command {
   registerTypecheckCommand(program);
   registerDepcruiseCommand(program);
   registerDockerComposeCommand(program);
+  registerInspectCommand(program);
   registerTransformCommand(program);
   return program;
 }
