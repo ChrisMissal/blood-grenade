@@ -12,6 +12,7 @@ describe("CLI help output", () => {
     expect(stdout).toMatch(/test <app>/i);
     expect(stdout).toMatch(/typecheck <app>/i);
     expect(stdout).toMatch(/depcruise <app>/i);
+    expect(stdout).toMatch(/transform/i);
   });
 
   ["build", "test", "typecheck", "depcruise"].forEach(cmd => {

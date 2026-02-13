@@ -5,17 +5,19 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "repo": "dist/index.js"
+    "repo": "dist/index.js",
+    "bg": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
     "test": "echo 'cli test stub' && exit 0",
     "depcruise": "echo 'cli depcruise stub' && exit 0",
-    "typecheck": "echo 'cli typecheck stub' && exit 0"
-      ,"depcheck": "echo 'cli depcheck stub' && exit 0"
+    "typecheck": "echo 'cli typecheck stub' && exit 0",
+    "depcheck": "echo 'cli depcheck stub' && exit 0"
   },
   "dependencies": {
     "commander": "^14.0.3",
-    "execa": "^8.0.1"
+    "execa": "^5.1.1",
+    "yaml": "^1.10.2"
   }
 }

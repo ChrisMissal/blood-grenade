@@ -1,0 +1,25 @@
+flowchart TD
+    Current[Current]
+    Target[Target]
+    Governance{Governance}
+    Current --> S_lane_control[Lane Control Modernization]
+    S_lane_control --> Target
+    Governance -. enforces .-> S_lane_control
+    class S_lane_control active
+    Current --> S_booking_payments[Booking and Payments]
+    S_booking_payments --> Target
+    Governance -. enforces .-> S_booking_payments
+    class S_booking_payments active
+    Current --> S_insights[Center Insights]
+    S_insights --> Target
+    Governance -. enforces .-> S_insights
+    class S_insights proposed
+    Current --> S_runbooks[Operational Runbooks]
+    S_runbooks --> Target
+    Governance -. enforces .-> S_runbooks
+    class S_runbooks completed
+
+    classDef active fill:#fff3cd,stroke:#ff9800,stroke-width:2px
+    classDef completed fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    classDef proposed fill:#ffffff,stroke:#64748b,stroke-dasharray: 5 5
+    classDef paused fill:#e5e7eb,stroke:#6b7280,stroke-dasharray: 2 6

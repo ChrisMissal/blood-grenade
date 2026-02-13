@@ -1,4 +1,4 @@
-import { execa } from "execa";
+import execa from "execa";
 import { Command } from "commander";
 
 export function registerTestCommand(program: Command) {
