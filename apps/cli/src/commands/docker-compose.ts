@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import fs from "fs";
 import path from "path";
-import { execa } from "execa";
+import execa from "execa";
 
 export function registerDockerComposeCommand(program: Command) {
   program
