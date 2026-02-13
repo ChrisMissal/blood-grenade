@@ -1,4 +1,4 @@
-import { execa } from "execa";
+import execa from "execa";
 
 export async function runWorkspaceScript(script: string, args: string[] = []) {
   await execa("npm", ["run", script, ...args], { stdio: "inherit" });

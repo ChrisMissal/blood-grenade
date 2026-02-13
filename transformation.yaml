@@ -1,0 +1,46 @@
+name: "Legacy Platform Transformation"
+currentState: "Monolithic service estate"
+targetState: "Stream-aligned platform architecture"
+phase: "active"
+streams:
+  - id: "stream-platform"
+    name: "Platform Foundation"
+    description: "Create shared platform capabilities and service templates"
+    owner: "Platform Team"
+    status: "active"
+    milestones:
+      - title: "Platform standards approved"
+        status: "done"
+      - title: "Golden path published"
+        status: "in-progress"
+  - id: "stream-delivery"
+    name: "Delivery Automation"
+    description: "Standardize CI/CD and quality gates across repositories"
+    owner: "DevEx Team"
+    status: "proposed"
+    milestones:
+      - title: "Pilot repository onboarded"
+        status: "todo"
+      - title: "Rollout checklist defined"
+        status: "todo"
+  - id: "stream-observability"
+    name: "Observability"
+    description: "Centralized logs, metrics, and alerts for transformed streams"
+    owner: "SRE Team"
+    status: "completed"
+    milestones:
+      - title: "Dashboards baseline complete"
+        status: "done"
+      - title: "Alert runbooks documented"
+        status: "done"
+governance:
+  automationRules:
+    - "Automated regression tests required per stream"
+    - "Dependency checks run on every pull request"
+  sourceControlRules:
+    - "Transformation changes must use branch naming transformation/<phase>"
+    - "At least one CODEOWNER approval is required"
+  qualityGates:
+    - "npm run typecheck"
+    - "npm test"
+    - "npm run depcruise"
