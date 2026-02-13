@@ -5,14 +5,16 @@ import { registerTypecheckCommand } from "./commands/typecheck.js";
 
 import { registerDepcruiseCommand } from "./commands/depcruise.js";
 import { registerDockerComposeCommand } from "./commands/docker-compose.js";
+import { registerInspectCommand } from "./commands/inspect.js";
 
 export function buildProgram(): Command {
   const program = new Command();
-  program.name("repo").description("Monorepo management CLI");
+  program.name("bg").description("Monorepo management CLI");
   registerBuildCommand(program);
   registerTestCommand(program);
   registerTypecheckCommand(program);
   registerDepcruiseCommand(program);
   registerDockerComposeCommand(program);
+  registerInspectCommand(program);
   return program;
 }

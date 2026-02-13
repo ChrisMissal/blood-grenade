@@ -56,6 +56,24 @@ npm run commitlint
 3. Select environment (`development`, `staging`, or `production`)
 4. Run workflow
 
+
+## CLI Inspection Command
+
+The CLI includes a generic inspection entry point:
+
+```bash
+node apps/cli/dist/index.js inspect .
+```
+
+- Default integration: `filesystem`
+- Output: table (default) or JSON (`--format json`)
+- Future options are already reserved: `--include-hidden`, `--max-depth`, `--detect-apps`, `--override-type`, `--integration`, `--config`
+
+### Architecture Boundary
+
+Inspection contracts and models are vendor-agnostic and live in the CLI core (`apps/cli/src/domain` and `apps/cli/src/application`).
+Provider-specific adapters live under `apps/cli/src/integrations/*`, with additional top-level namespace docs in [`integrations/`](integrations).
+
 ## Workflows
 
 - **PR Check**: Validates conventional commit format
