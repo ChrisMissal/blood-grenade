@@ -26,6 +26,35 @@
             "Default branch: main",
             "Visibility: public",
             "Stars: 13"
+          ],
+          "architecturalTaxonomy": [
+            {
+              "dimension": "component-archetype",
+              "value": "node-app",
+              "confidence": 0.88,
+              "evidence": [
+                "Primary language: TypeScript"
+              ]
+            },
+            {
+              "dimension": "domain-role",
+              "value": "domain-service",
+              "confidence": 0.6,
+              "evidence": [
+                "Inferred from repository naming matrix"
+              ]
+            }
+          ],
+          "componentStereotypeMatrix": [
+            {
+              "stereotype": "service-component",
+              "componentName": "node-service",
+              "source": "github-repository",
+              "confidence": 0.88,
+              "notes": [
+                "Derived from repository name node-service"
+              ]
+            }
           ]
         },
         {
@@ -43,6 +72,35 @@
             "Default branch: main",
             "Visibility: private",
             "Stars: 0"
+          ],
+          "architecturalTaxonomy": [
+            {
+              "dimension": "component-archetype",
+              "value": "terraform-stack",
+              "confidence": 0.78,
+              "evidence": [
+                "Primary language: HCL"
+              ]
+            },
+            {
+              "dimension": "domain-role",
+              "value": "platform-capability",
+              "confidence": 0.6,
+              "evidence": [
+                "Inferred from repository naming matrix"
+              ]
+            }
+          ],
+          "componentStereotypeMatrix": [
+            {
+              "stereotype": "platform-component",
+              "componentName": "infra-stack",
+              "source": "github-repository",
+              "confidence": 0.78,
+              "notes": [
+                "Derived from repository name infra-stack"
+              ]
+            }
           ]
         }
       ],
