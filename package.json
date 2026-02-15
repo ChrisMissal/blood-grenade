@@ -10,14 +10,15 @@
   ],
   "scripts": {
     "repo": "node apps/cli/dist/index.js",
+    "create:github-token": "node scripts/create-github-token.mjs",
     "build": "npm run build --workspaces",
-    "test": "npx jest --config tests/jest.config.js",
+    "test": "npx jest --config tests/jest.config.mjs",
     "typecheck": "npm run typecheck --workspaces",
     "depcheck": "npm run depcheck --workspaces",
     "depcruise": "npm run depcruise --workspaces",
-     "syncpack:check": "npx syncpack list-mismatches",
-     "syncpack:fix": "npx syncpack fix-mismatches",
-     "check": "npm run syncpack:check && npm run typecheck --workspaces && npm run depcheck --workspaces && npm run depcruise --workspaces && npm test",
+    "syncpack:check": "npx syncpack list-mismatches",
+    "syncpack:fix": "npx syncpack fix-mismatches",
+    "check": "npm run syncpack:check && npm run typecheck --workspaces && npm run depcheck --workspaces && npm run depcruise --workspaces && npm test",
     "doctor": "npm run repo -- doctor",
     "commitlint": "node scripts/commitlint.js",
     "check:apps": "node scripts/check-app-structure.js"
@@ -46,12 +47,14 @@
     "conventional-changelog-conventionalcommits": "^7.0.2",
     "depcheck": "^1.4.7",
     "dependency-cruiser": "^17.3.8",
+    "dotenv": "^17.3.1",
     "jest": "^30.2.0",
     "semantic-release": "^25.0.3",
     "syncpack": "^13.0.4",
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "commander": "^14.0.3"
+    "commander": "^14.0.3",
+    "open": "^11.0.0"
   }
 }

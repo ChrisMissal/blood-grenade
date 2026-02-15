@@ -1,3 +1,5 @@
+# Ignore test GitHub token file
+.env.test.github
 # Dependencies
 node_modules/
 apps/*/node_modules/

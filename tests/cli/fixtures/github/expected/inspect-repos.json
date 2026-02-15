@@ -1,0 +1,20 @@
+{
+  "results": [
+    {
+      "integrationName": "github",
+      "target": {
+        "includeHidden": false,
+        "maxDepth": 4,
+        "detectApps": true
+      },
+      "inspectedAt": "<INSPECTED_AT>",
+      "repositoryRoot": "https://github.com/chrismissal",
+      "detectedApplications": [],
+      "warnings": [
+        "GitHub inspection uses repository metadata heuristics and may not reflect full build/runtime requirements.",
+        "No repositories found for chrismissal."
+      ],
+      "errors": []
+    }
+  ]
+}
