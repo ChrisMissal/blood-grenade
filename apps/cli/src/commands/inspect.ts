@@ -17,12 +17,12 @@ export function registerInspectCommand(program: Command) {
   program
     .command("inspect [paths...]")
     .description("Inspect repositories or applications using pluggable integrations")
+    .requiredOption("--integration <name>", "Inspector integration to use (required)")
     .option("--format <format>", "Output format: json|table", "table")
     .option("--include-hidden", "Include hidden directories and files")
     .option("--max-depth <number>", "Maximum traversal depth", "4")
     .option("--detect-apps", "Enable app detection heuristics", true)
     .option("--override-type <type>", "Override detected type")
-    .option("--integration <name>", "Inspector integration to use", "filesystem")
     .option("--config <file>", "Future integration-specific config file path")
     .action(async (paths: string[] | undefined, flags: InspectCommandFlags) => {
       const outputFormat = flags.format === "json" ? "json" : "table";
@@ -30,6 +30,11 @@ export function registerInspectCommand(program: Command) {
 
       if (Number.isNaN(maxDepth) || maxDepth < 0) {
         throw new Error("--max-depth must be a non-negative integer.");
+      }
+
+      // Require a username/org for github integration
+      if (flags.integration === "github" && (!paths || paths.length === 0)) {
+        throw new Error("You must provide a GitHub username or org as a path argument for the github integration.");
       }
 
       const integration = resolveInspectorIntegration(flags.integration);
