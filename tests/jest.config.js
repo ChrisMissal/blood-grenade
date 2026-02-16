@@ -1,5 +1,5 @@
 export default {
   testEnvironment: "node",
-  testMatch: ["**/*.test.js"],
+  testMatch: ["**/*.test.js", "**/*.test.mjs"],
   verbose: true
 };
