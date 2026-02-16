@@ -1,7 +1,13 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { InspectorIntegration } from "../../domain/inspect/contracts.js";
-import type { DetectedApplication, InspectionResult, InspectionTarget } from "../../domain/inspect/models.js";
+import type {
+  ArchitecturalTaxonomyMapping,
+  ComponentStereotypeMatrixEntry,
+  DetectedApplication,
+  InspectionResult,
+  InspectionTarget,
+} from "../../domain/inspect/models.js";
 
 interface DetectionRule {
   pattern: RegExp;
@@ -10,6 +16,15 @@ interface DetectionRule {
   buildSystem: string;
   confidence: number;
 }
+
+const TYPE_TO_ARCHITECTURE_STYLE: Record<string, string> = {
+  "node-app": "modular-monolith",
+  "dotnet-solution": "layered",
+  "java-app": "layered",
+  "python-app": "modular",
+  "container-compose": "distributed-system",
+  "terraform-stack": "infrastructure-as-code",
+};
 
 const DETECTION_RULES: DetectionRule[] = [
   { pattern: /^package\.json$/i, type: "node-app", runtime: "nodejs", buildSystem: "npm", confidence: 0.95 },
@@ -155,7 +170,38 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
         `Detected via ${descriptor.name}`,
         target.overrideType ? `Type overridden to ${target.overrideType}` : "Type inferred from heuristics",
       ],
+      architecturalTaxonomy: this.buildTaxonomy(target.overrideType ?? matched.type, descriptor.name, matched.confidence),
+      componentStereotypeMatrix: this.buildStereotypeMatrix(appName, descriptor.name, matched.confidence),
     };
+  }
+
+  private buildTaxonomy(type: string, descriptor: string, confidence: number): ArchitecturalTaxonomyMapping[] {
+    return [
+      {
+        dimension: "component-archetype",
+        value: type,
+        confidence,
+        evidence: [`Detected from descriptor ${descriptor}`],
+      },
+      {
+        dimension: "architecture-style",
+        value: TYPE_TO_ARCHITECTURE_STYLE[type] ?? "unknown",
+        confidence: Math.max(0.5, confidence - 0.1),
+        evidence: [`Mapped from inferred type ${type}`],
+      },
+    ];
+  }
+
+  private buildStereotypeMatrix(appName: string, descriptor: string, confidence: number): ComponentStereotypeMatrixEntry[] {
+    return [
+      {
+        stereotype: "application-shell",
+        componentName: appName,
+        source: descriptor,
+        confidence,
+        notes: ["Top-level descriptor indicates deployable application boundary."],
+      },
+    ];
   }
 
   private async resolveRepositoryRoot(inputPath: string): Promise<string> {

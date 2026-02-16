@@ -1,5 +1,11 @@
 import type { InspectorIntegration } from "../../domain/inspect/contracts.js";
-import type { DetectedApplication, InspectionResult, InspectionTarget } from "../../domain/inspect/models.js";
+import type {
+  ArchitecturalTaxonomyMapping,
+  ComponentStereotypeMatrixEntry,
+  DetectedApplication,
+  InspectionResult,
+  InspectionTarget,
+} from "../../domain/inspect/models.js";
 
 interface GithubOwnerResponse {
   login: string;
@@ -103,7 +109,61 @@ export class GithubInspectorIntegration implements InspectorIntegration {
         `Visibility: ${repo.visibility ?? "unknown"}`,
         `Stars: ${repo.stargazers_count ?? 0}`,
       ],
+      architecturalTaxonomy: this.buildTaxonomy(target.overrideType ?? mapping?.type ?? "unknown-repo", repo, mapping?.confidence ?? 0.55),
+      componentStereotypeMatrix: this.buildStereotypeMatrix(repo, mapping?.confidence ?? 0.55),
     };
+  }
+
+  private buildTaxonomy(type: string, repo: GithubRepoResponse, confidence: number): ArchitecturalTaxonomyMapping[] {
+    return [
+      {
+        dimension: "component-archetype",
+        value: type,
+        confidence,
+        evidence: [`Primary language: ${repo.language ?? "unknown"}`],
+      },
+      {
+        dimension: "domain-role",
+        value: this.inferDomainRole(repo.name),
+        confidence: 0.6,
+        evidence: ["Inferred from repository naming matrix"],
+      },
+    ];
+  }
+
+  private buildStereotypeMatrix(repo: GithubRepoResponse, confidence: number): ComponentStereotypeMatrixEntry[] {
+    return [
+      {
+        stereotype: this.inferStereotype(repo.name),
+        componentName: repo.name,
+        source: "github-repository",
+        confidence,
+        notes: [`Derived from repository name ${repo.name}`],
+      },
+    ];
+  }
+
+  private inferDomainRole(repositoryName: string): string {
+    if (/infra|terraform|platform/i.test(repositoryName)) {
+      return "platform-capability";
+    }
+    if (/api|service|backend/i.test(repositoryName)) {
+      return "domain-service";
+    }
+    if (/ui|web|frontend/i.test(repositoryName)) {
+      return "presentation";
+    }
+    return "shared-capability";
+  }
+
+  private inferStereotype(repositoryName: string): string {
+    if (/worker|job|queue/i.test(repositoryName)) {
+      return "processing-component";
+    }
+    if (/infra|terraform|platform/i.test(repositoryName)) {
+      return "platform-component";
+    }
+    return "service-component";
   }
 
   private async fetchOwner(owner: string, result: InspectionResult): Promise<GithubOwnerResponse> {

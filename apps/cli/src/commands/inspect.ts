@@ -77,12 +77,14 @@ function printTable(results: InspectionResult[]) {
       continue;
     }
 
-    console.log("Name | Type | Runtime | Build | Status | Path");
-    console.log("--- | --- | --- | --- | --- | ---");
+    console.log("Name | Type | Runtime | Build | Status | Taxonomy | Stereotype | Path");
+    console.log("--- | --- | --- | --- | --- | --- | --- | ---");
 
     for (const application of result.detectedApplications) {
+      const taxonomy = application.architecturalTaxonomy.map(mapping => `${mapping.dimension}:${mapping.value}`).join(", ");
+      const stereotypes = application.componentStereotypeMatrix.map(entry => entry.stereotype).join(", ");
       console.log(
-        `${application.name} | ${application.type} | ${application.languageRuntimeGuess} | ${application.buildSystemGuess} | ${application.statusHint} | ${application.rootPath}`,
+        `${application.name} | ${application.type} | ${application.languageRuntimeGuess} | ${application.buildSystemGuess} | ${application.statusHint} | ${taxonomy || "n/a"} | ${stereotypes || "n/a"} | ${application.rootPath}`,
       );
     }
   }

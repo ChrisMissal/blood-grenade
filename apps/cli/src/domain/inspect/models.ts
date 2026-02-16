@@ -1,5 +1,20 @@
 export type InspectionOutputFormat = "table" | "json";
 
+export interface ArchitecturalTaxonomyMapping {
+  dimension: "architecture-style" | "layer" | "component-archetype" | "domain-role";
+  value: string;
+  confidence: number;
+  evidence: string[];
+}
+
+export interface ComponentStereotypeMatrixEntry {
+  stereotype: string;
+  componentName: string;
+  source: string;
+  confidence: number;
+  notes: string[];
+}
+
 export interface InspectionTarget {
   sourcePath: string;
   includeHidden: boolean;
@@ -19,6 +34,8 @@ export interface DetectedApplication {
   lastModifiedAt?: string;
   confidence: number;
   notes: string[];
+  architecturalTaxonomy: ArchitecturalTaxonomyMapping[];
+  componentStereotypeMatrix: ComponentStereotypeMatrixEntry[];
 }
 
 export interface InspectionError {
