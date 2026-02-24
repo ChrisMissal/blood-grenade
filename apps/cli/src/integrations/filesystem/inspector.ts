@@ -21,21 +21,45 @@ interface DetectionRule {
   confidence: number;
 }
 
+interface FallbackWorkloadDetection {
+  descriptorFile: string;
+  type: "sql-job" | "data-job";
+  runtime: string;
+  buildSystem: string;
+  confidence: number;
+  notes: string[];
+}
+
 const TYPE_TO_ARCHITECTURE_STYLE: Record<string, string> = {
   "node-app": "modular-monolith",
   "dotnet-solution": "layered",
   "java-app": "layered",
+  "go-app": "modular",
+  "rust-app": "modular",
   "python-app": "modular",
+  "ruby-app": "layered",
+  "php-app": "layered",
   "container-compose": "distributed-system",
+  "container-image": "distributed-system",
   "terraform-stack": "infrastructure-as-code",
+  "sql-job": "data-pipeline",
+  "data-job": "data-pipeline",
 };
 
 const DETECTION_RULES: DetectionRule[] = [
   { pattern: /^package\.json$/i, type: "node-app", runtime: "nodejs", buildSystem: "npm", confidence: 0.95 },
+  { pattern: /^go\.mod$/i, type: "go-app", runtime: "go", buildSystem: "go", confidence: 0.9 },
+  { pattern: /^Cargo\.toml$/i, type: "rust-app", runtime: "rust", buildSystem: "cargo", confidence: 0.9 },
+  { pattern: /^Gemfile$/i, type: "ruby-app", runtime: "ruby", buildSystem: "bundler", confidence: 0.86 },
+  { pattern: /^composer\.json$/i, type: "php-app", runtime: "php", buildSystem: "composer", confidence: 0.86 },
   { pattern: /\.sln$/i, type: "dotnet-solution", runtime: "dotnet", buildSystem: "msbuild", confidence: 0.9 },
+  { pattern: /\.csproj$/i, type: "dotnet-solution", runtime: "dotnet", buildSystem: "msbuild", confidence: 0.88 },
   { pattern: /^pom\.xml$/i, type: "java-app", runtime: "jvm", buildSystem: "maven", confidence: 0.9 },
+  { pattern: /^build\.gradle(\.kts)?$/i, type: "java-app", runtime: "jvm", buildSystem: "gradle", confidence: 0.88 },
   { pattern: /^pyproject\.toml$/i, type: "python-app", runtime: "python", buildSystem: "pip/poetry", confidence: 0.9 },
+  { pattern: /^requirements\.txt$/i, type: "python-app", runtime: "python", buildSystem: "pip", confidence: 0.82 },
   { pattern: /^docker-compose\.ya?ml$/i, type: "container-compose", runtime: "containers", buildSystem: "docker-compose", confidence: 0.7 },
+  { pattern: /^Dockerfile$/i, type: "container-image", runtime: "containers", buildSystem: "docker", confidence: 0.74 },
   { pattern: /\.tf$/i, type: "terraform-stack", runtime: "terraform", buildSystem: "terraform", confidence: 0.8 },
 ];
 
@@ -130,16 +154,27 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
     target: InspectionTarget,
   ): Promise<DetectedApplication | undefined> {
     const matched = DETECTION_RULES.find(rule => entries.some(entry => rule.pattern.test(entry.name)));
-    if (!matched) {
+    const fallback = !matched ? await this.detectFallbackWorkload(rootPath, entries) : undefined;
+    if (!matched && !fallback) {
       return undefined;
     }
 
-    const descriptor = entries.find(entry => matched.pattern.test(entry.name));
-    if (!descriptor) {
+    const descriptor = matched ? entries.find(entry => matched.pattern.test(entry.name)) : undefined;
+    if (matched && !descriptor) {
       return undefined;
     }
 
-    const descriptorPath = path.join(rootPath, descriptor.name);
+    const descriptorFile = descriptor?.name ?? fallback?.descriptorFile;
+    if (!descriptorFile) {
+      return undefined;
+    }
+
+    const descriptorPath = path.join(rootPath, descriptorFile);
+    const appType = target.overrideType ?? matched?.type ?? fallback?.type ?? "unknown";
+    const runtimeGuess = matched?.runtime ?? fallback?.runtime ?? "unknown";
+    const buildSystemGuess = matched?.buildSystem ?? fallback?.buildSystem ?? "unknown";
+    const confidence = matched?.confidence ?? fallback?.confidence ?? 0.5;
+
     let appName = path.basename(rootPath);
     let statusHint: "active" | "halted" | "unknown" = "unknown";
     let lastModifiedAt: string | undefined;
@@ -157,7 +192,7 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
       statusHint = "unknown";
     }
 
-    if (descriptor.name === "package.json") {
+    if (descriptorFile === "package.json") {
       try {
         const pkgRaw = await fs.readFile(descriptorPath, "utf8");
         const pkg = JSON.parse(pkgRaw) as { name?: string };
@@ -174,26 +209,103 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
     return {
       rootPath,
       name: appName,
-      descriptorFile: descriptor.name,
-      type: target.overrideType ?? matched.type,
-      languageRuntimeGuess: matched.runtime,
-      buildSystemGuess: matched.buildSystem,
+      descriptorFile,
+      type: appType,
+      languageRuntimeGuess: runtimeGuess,
+      buildSystemGuess,
       statusHint,
       lastModifiedAt,
-      confidence: matched.confidence,
+      confidence,
       notes: [
-        `Detected via ${descriptor.name}`,
+        `Detected via ${descriptorFile}`,
+        ...(fallback?.notes ?? []),
         target.overrideType ? `Type overridden to ${target.overrideType}` : "Type inferred from heuristics",
       ],
-      architecturalTaxonomy: this.buildTaxonomy(target.overrideType ?? matched.type, descriptor.name, matched.confidence),
+      architecturalTaxonomy: this.buildTaxonomy(appType, descriptorFile, confidence),
       componentStereotypeMatrix: this.buildStereotypeMatrix(
         appName,
-        descriptor.name,
-        target.overrideType ?? matched.type,
-        matched.confidence,
+        descriptorFile,
+        appType,
+        confidence,
       ),
       thirdPartyIntegrations,
     };
+  }
+
+  private async detectFallbackWorkload(
+    rootPath: string,
+    entries: Array<{ name: string; isDirectory: () => boolean }>,
+  ): Promise<FallbackWorkloadDetection | undefined> {
+    const files = entries.filter(entry => !entry.isDirectory());
+    const entryNames = entries.map(entry => entry.name.toLowerCase());
+
+    const sqlFile = files.find(entry => entry.name.toLowerCase().endsWith(".sql"));
+    if (sqlFile) {
+      return {
+        descriptorFile: sqlFile.name,
+        type: "sql-job",
+        runtime: "sql",
+        buildSystem: "sql-runner",
+        confidence: 0.72,
+        notes: ["No standard app descriptor found; inferred SQL workload from .sql source files."],
+      };
+    }
+
+    const hasSqlInSource = await this.hasSqlInSourceCode(rootPath, files);
+    if (hasSqlInSource) {
+      return {
+        descriptorFile: hasSqlInSource,
+        type: "sql-job",
+        runtime: "sql",
+        buildSystem: "sql-runner",
+        confidence: 0.68,
+        notes: ["No standard app descriptor found; inferred SQL workload from SQL-like source content."],
+      };
+    }
+
+    const hasDataSignal =
+      entryNames.some(name => /(^|[-_])(etl|pipeline|ingest|transform|dataset|warehouse|analytics|dbt)($|[-_.])/.test(name))
+      || files.some(entry => /\.(csv|tsv|parquet|avro|orc|jsonl)$/i.test(entry.name));
+
+    if (!hasDataSignal) {
+      return undefined;
+    }
+
+    const dataDescriptor = files.find(entry => /\.(csv|tsv|parquet|avro|orc|jsonl)$/i.test(entry.name))
+      ?? entries.find(entry => /(^|[-_])(etl|pipeline|ingest|transform|dataset|warehouse|analytics|dbt)($|[-_.])/.test(entry.name.toLowerCase()));
+
+    return {
+      descriptorFile: dataDescriptor?.name ?? "source-heuristic",
+      type: "data-job",
+      runtime: "data-platform",
+      buildSystem: "orchestrated-job",
+      confidence: 0.6,
+      notes: ["No standard app descriptor found; inferred data workload from file/directory naming signals."],
+    };
+  }
+
+  private async hasSqlInSourceCode(
+    rootPath: string,
+    files: Array<{ name: string; isDirectory: () => boolean }>,
+  ): Promise<string | undefined> {
+    const sourceFiles = files
+      .filter(entry => /\.(js|mjs|cjs|ts|tsx|py|java|cs|go|rb|php)$/i.test(entry.name))
+      .slice(0, 10);
+
+    for (const sourceFile of sourceFiles) {
+      try {
+        const sourcePath = path.join(rootPath, sourceFile.name);
+        const raw = await fs.readFile(sourcePath, "utf8");
+        const snippet = raw.slice(0, 12_000);
+        if (/\b(select|insert|update|delete|create\s+table|drop\s+table|with)\b/i.test(snippet)) {
+          return sourceFile.name;
+        }
+      } catch {
+        // Ignore unreadable source files and continue.
+      }
+    }
+
+    return undefined;
   }
 
   private async detectThirdPartyIntegrations(

@@ -32,12 +32,29 @@ interface GithubInspectionFixture {
 const LANGUAGE_MAPPINGS: Record<string, { type: string; runtime: string; buildSystem: string; confidence: number }> = {
   TypeScript: { type: "node-app", runtime: "nodejs", buildSystem: "npm", confidence: 0.88 },
   JavaScript: { type: "node-app", runtime: "nodejs", buildSystem: "npm", confidence: 0.85 },
+  "Jupyter Notebook": { type: "data-job", runtime: "python", buildSystem: "notebook", confidence: 0.8 },
+  Shell: { type: "batch-job", runtime: "shell", buildSystem: "shell", confidence: 0.76 },
+  PowerShell: { type: "batch-job", runtime: "powershell", buildSystem: "powershell", confidence: 0.76 },
+  R: { type: "data-job", runtime: "r", buildSystem: "rscript", confidence: 0.8 },
+  Scala: { type: "data-job", runtime: "jvm", buildSystem: "sbt/gradle", confidence: 0.78 },
   Python: { type: "python-app", runtime: "python", buildSystem: "pip/poetry", confidence: 0.82 },
   Java: { type: "java-app", runtime: "jvm", buildSystem: "maven/gradle", confidence: 0.8 },
+  Kotlin: { type: "java-app", runtime: "jvm", buildSystem: "gradle", confidence: 0.79 },
   Go: { type: "go-app", runtime: "go", buildSystem: "go", confidence: 0.8 },
   Rust: { type: "rust-app", runtime: "rust", buildSystem: "cargo", confidence: 0.8 },
+  Ruby: { type: "ruby-app", runtime: "ruby", buildSystem: "bundler", confidence: 0.79 },
+  PHP: { type: "php-app", runtime: "php", buildSystem: "composer", confidence: 0.79 },
+  "C#": { type: "dotnet-solution", runtime: "dotnet", buildSystem: "msbuild", confidence: 0.8 },
+  FSharp: { type: "dotnet-solution", runtime: "dotnet", buildSystem: "msbuild", confidence: 0.76 },
+  Swift: { type: "ios-app", runtime: "swift", buildSystem: "swiftpm/xcodebuild", confidence: 0.75 },
+  Dart: { type: "dart-app", runtime: "dart", buildSystem: "dart/flutter", confidence: 0.75 },
+  Elixir: { type: "beam-app", runtime: "beam", buildSystem: "mix", confidence: 0.75 },
+  Haskell: { type: "haskell-app", runtime: "haskell", buildSystem: "stack/cabal", confidence: 0.72 },
+  Lua: { type: "lua-app", runtime: "lua", buildSystem: "lua", confidence: 0.7 },
+  Perl: { type: "perl-app", runtime: "perl", buildSystem: "cpan", confidence: 0.7 },
   HCL: { type: "terraform-stack", runtime: "terraform", buildSystem: "terraform", confidence: 0.78 },
   Dockerfile: { type: "container-image", runtime: "containers", buildSystem: "docker", confidence: 0.75 },
+  SQL: { type: "sql-job", runtime: "sql", buildSystem: "sql-runner", confidence: 0.74 },
 };
 
 export class GithubInspectorIntegration implements InspectorIntegration {
@@ -93,28 +110,83 @@ export class GithubInspectorIntegration implements InspectorIntegration {
   }
 
   private mapRepositoryToDetectedApplication(target: InspectionTarget, repo: GithubRepoResponse): DetectedApplication {
-    const mapping = repo.language ? LANGUAGE_MAPPINGS[repo.language] : undefined;
-    const inferredType = target.overrideType ?? mapping?.type ?? "unknown-repo";
+    const mapping = repo.language ? LANGUAGE_MAPPINGS[repo.language] ?? this.inferLanguageMapping(repo.language) : undefined;
+    const fallback = mapping ? undefined : this.inferFallbackType(repo);
+    const inferredType = target.overrideType ?? mapping?.type ?? fallback?.type ?? "unknown-repo";
+    const runtimeGuess = mapping?.runtime ?? fallback?.runtime ?? "unknown";
+    const buildSystemGuess = mapping?.buildSystem ?? fallback?.buildSystem ?? "unknown";
+    const confidence = mapping?.confidence ?? fallback?.confidence ?? 0.55;
     return {
       rootPath: repo.html_url,
       name: repo.name,
       descriptorFile: "github-repository",
       type: inferredType,
-      languageRuntimeGuess: mapping?.runtime ?? "unknown",
-      buildSystemGuess: mapping?.buildSystem ?? "unknown",
+      languageRuntimeGuess: runtimeGuess,
+      buildSystemGuess,
       statusHint: repo.archived ? "halted" : "active",
       lastModifiedAt: repo.pushed_at,
-      confidence: mapping?.confidence ?? 0.55,
+      confidence,
       notes: [
         `Detected from primary language ${repo.language ?? "unknown"}`,
+        ...(fallback ? [fallback.note] : []),
         `Default branch: ${repo.default_branch}`,
         `Visibility: ${repo.visibility ?? "unknown"}`,
         `Stars: ${repo.stargazers_count ?? 0}`,
       ],
-      architecturalTaxonomy: this.buildTaxonomy(inferredType, repo, mapping?.confidence ?? 0.55),
-      componentStereotypeMatrix: this.buildStereotypeMatrix(repo, inferredType, mapping?.confidence ?? 0.55),
+      architecturalTaxonomy: this.buildTaxonomy(inferredType, repo, confidence),
+      componentStereotypeMatrix: this.buildStereotypeMatrix(repo, inferredType, confidence),
       thirdPartyIntegrations: [],
     };
+  }
+
+  private inferFallbackType(repo: GithubRepoResponse):
+    | { type: "sql-job" | "data-job"; runtime: string; buildSystem: string; confidence: number; note: string }
+    | undefined {
+    const language = (repo.language ?? "").toLowerCase();
+    const repoName = repo.name.toLowerCase();
+
+    if (language === "sql" || language === "plpgsql" || /(^|[-_])sql($|[-_])/.test(repoName)) {
+      return {
+        type: "sql-job",
+        runtime: "sql",
+        buildSystem: "sql-runner",
+        confidence: 0.7,
+        note: "No primary language mapping matched; inferred sql-job from repository language/name signals.",
+      };
+    }
+
+    const isDataLanguage = ["jupyter notebook", "r", "scala", "sas"].includes(language);
+    const hasDataNameSignal = /(^|[-_])(etl|pipeline|ingest|transform|warehouse|analytics|dataset|dbt|airflow)($|[-_])/.test(repoName);
+    if (isDataLanguage || hasDataNameSignal) {
+      return {
+        type: "data-job",
+        runtime: "data-platform",
+        buildSystem: "orchestrated-job",
+        confidence: 0.64,
+        note: "No primary language mapping matched; inferred data-job from repository language/name signals.",
+      };
+    }
+
+    return undefined;
+  }
+
+  private inferLanguageMapping(language: string):
+    | { type: string; runtime: string; buildSystem: string; confidence: number }
+    | undefined {
+    const normalized = language.toLowerCase();
+    if (normalized.includes("sql")) {
+      return { type: "sql-job", runtime: "sql", buildSystem: "sql-runner", confidence: 0.66 };
+    }
+    if (normalized.includes("shell") || normalized.includes("powershell")) {
+      return { type: "batch-job", runtime: "shell", buildSystem: "shell", confidence: 0.64 };
+    }
+    if (normalized.includes("html") || normalized.includes("css")) {
+      return { type: "static-app", runtime: "browser", buildSystem: "static-assets", confidence: 0.62 };
+    }
+    if (normalized.includes("r") || normalized.includes("notebook")) {
+      return { type: "data-job", runtime: "data-platform", buildSystem: "orchestrated-job", confidence: 0.62 };
+    }
+    return undefined;
   }
 
   private buildTaxonomy(type: string, repo: GithubRepoResponse, confidence: number): ArchitecturalTaxonomyMapping[] {

@@ -32,6 +32,10 @@ async function makeFixture() {
   await fs.mkdir(path.join(root, "repo-b", "service"), { recursive: true });
   await fs.writeFile(path.join(root, "repo-b", "service", "pyproject.toml"), "[project]\nname='svc'\n", "utf8");
   await fs.writeFile(path.join(root, "repo-b", "terraform.tf"), "terraform {}", "utf8");
+  await fs.mkdir(path.join(root, "repo-c"), { recursive: true });
+  await fs.writeFile(path.join(root, "repo-c", "warehouse.sql"), "SELECT * FROM accounts;", "utf8");
+  await fs.mkdir(path.join(root, "repo-d"), { recursive: true });
+  await fs.writeFile(path.join(root, "repo-d", "daily-dataset.csv"), "id,value\n1,2\n", "utf8");
 
   return root;
 }
@@ -61,6 +65,8 @@ describe("inspect command", () => {
     expect(apps.some(app => app.name === "repo-a-service")).toBe(true);
     expect(apps.some(app => app.descriptorFile === "pyproject.toml")).toBe(true);
     expect(apps.some(app => app.descriptorFile === "terraform.tf")).toBe(true);
+    expect(apps.some(app => app.type === "sql-job")).toBe(true);
+    expect(apps.some(app => app.type === "data-job")).toBe(true);
     expect(apps.every(app => Array.isArray(app.architecturalTaxonomy))).toBe(true);
     expect(apps.every(app => Array.isArray(app.componentStereotypeMatrix))).toBe(true);
     expect(apps.every(app => Array.isArray(app.thirdPartyIntegrations))).toBe(true);
