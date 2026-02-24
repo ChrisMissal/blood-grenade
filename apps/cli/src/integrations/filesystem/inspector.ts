@@ -3,6 +3,7 @@ import path from "node:path";
 import YAML from "yaml";
 import type { InspectorIntegration } from "../../domain/inspect/contracts.js";
 import { THIRD_PARTY_CATALOG } from "./third-party-catalog.js";
+import { inferC4ContainerStereotype } from "../shared/c4-container-stereotypes.js";
 import type {
   ArchitecturalTaxonomyMapping,
   ComponentStereotypeMatrixEntry,
@@ -363,23 +364,13 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
         notes: ["Top-level descriptor indicates deployable application boundary."],
       },
       {
-        stereotype: this.inferC4ContainerStereotype(appType),
+        stereotype: inferC4ContainerStereotype(appName, appType),
         componentName: appName,
         source: descriptor,
         confidence: Math.max(0.6, confidence - 0.05),
         notes: [`Mapped to C4 container stereotype from inferred type ${appType}.`],
       },
     ];
-  }
-
-  private inferC4ContainerStereotype(appType: string): string {
-    if (appType === "terraform-stack") {
-      return "c4-container:infrastructure";
-    }
-    if (appType === "container-compose") {
-      return "c4-container:orchestrator";
-    }
-    return "c4-container:application";
   }
 
   private async resolveRepositoryRoot(inputPath: string): Promise<string> {

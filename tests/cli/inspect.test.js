@@ -66,7 +66,7 @@ describe("inspect command", () => {
     expect(apps.every(app => Array.isArray(app.thirdPartyIntegrations))).toBe(true);
     const nodeApp = apps.find(app => app.name === "repo-a-service");
     expect(nodeApp.componentStereotypeMatrix).toEqual(
-      expect.arrayContaining([expect.objectContaining({ stereotype: "c4-container:application" })]),
+      expect.arrayContaining([expect.objectContaining({ stereotype: "public-api" })]),
     );
     expect(nodeApp.thirdPartyIntegrations).toEqual(
       expect.arrayContaining([

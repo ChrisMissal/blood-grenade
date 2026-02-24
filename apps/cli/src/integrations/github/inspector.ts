@@ -1,4 +1,5 @@
 import type { InspectorIntegration } from "../../domain/inspect/contracts.js";
+import { inferC4ContainerStereotype } from "../shared/c4-container-stereotypes.js";
 import type {
   ArchitecturalTaxonomyMapping,
   ComponentStereotypeMatrixEntry,
@@ -143,7 +144,7 @@ export class GithubInspectorIntegration implements InspectorIntegration {
         notes: [`Derived from repository name ${repo.name}`],
       },
       {
-        stereotype: this.inferC4ContainerStereotype(repo.name, inferredType),
+        stereotype: inferC4ContainerStereotype(repo.name, inferredType),
         componentName: repo.name,
         source: "github-repository",
         confidence: Math.max(0.5, confidence - 0.05),
@@ -173,22 +174,6 @@ export class GithubInspectorIntegration implements InspectorIntegration {
       return "platform-component";
     }
     return "service-component";
-  }
-
-  private inferC4ContainerStereotype(repositoryName: string, inferredType: string): string {
-    if (/infra|terraform|platform/i.test(repositoryName) || inferredType === "terraform-stack") {
-      return "c4-container:infrastructure";
-    }
-    if (/worker|job|queue/i.test(repositoryName)) {
-      return "c4-container:worker";
-    }
-    if (/ui|web|frontend/i.test(repositoryName)) {
-      return "c4-container:web-application";
-    }
-    if (/api|service|backend/i.test(repositoryName)) {
-      return "c4-container:api-application";
-    }
-    return "c4-container:application";
   }
 
   private async fetchOwner(owner: string, result: InspectionResult): Promise<GithubOwnerResponse> {
