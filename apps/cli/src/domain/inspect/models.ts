@@ -15,6 +15,13 @@ export interface ComponentStereotypeMatrixEntry {
   notes: string[];
 }
 
+export interface ThirdPartyIntegration {
+  productName: string;
+  category: string;
+  source: "metadata-file" | "descriptor-dependency";
+  evidence: string;
+}
+
 export interface InspectionTarget {
   sourcePath: string;
   includeHidden: boolean;
@@ -36,6 +43,7 @@ export interface DetectedApplication {
   notes: string[];
   architecturalTaxonomy: ArchitecturalTaxonomyMapping[];
   componentStereotypeMatrix: ComponentStereotypeMatrixEntry[];
+  thirdPartyIntegrations: ThirdPartyIntegration[];
 }
 
 export interface InspectionError {

@@ -1,12 +1,15 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import YAML from "yaml";
 import type { InspectorIntegration } from "../../domain/inspect/contracts.js";
+import { THIRD_PARTY_CATALOG } from "./third-party-catalog.js";
 import type {
   ArchitecturalTaxonomyMapping,
   ComponentStereotypeMatrixEntry,
   DetectedApplication,
   InspectionResult,
   InspectionTarget,
+  ThirdPartyIntegration,
 } from "../../domain/inspect/models.js";
 
 interface DetectionRule {
@@ -34,6 +37,15 @@ const DETECTION_RULES: DetectionRule[] = [
   { pattern: /^docker-compose\.ya?ml$/i, type: "container-compose", runtime: "containers", buildSystem: "docker-compose", confidence: 0.7 },
   { pattern: /\.tf$/i, type: "terraform-stack", runtime: "terraform", buildSystem: "terraform", confidence: 0.8 },
 ];
+
+const THIRD_PARTY_METADATA_FILES = [
+  "integration-metadata.json",
+  "integration-metadata.yaml",
+  "integration-metadata.yml",
+  "third-party-integrations.json",
+  "third-party-integrations.yaml",
+  "third-party-integrations.yml",
+] as const;
 
 export class FilesystemInspectorIntegration implements InspectorIntegration {
   name = "filesystem";
@@ -156,6 +168,8 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
       }
     }
 
+    const thirdPartyIntegrations = await this.detectThirdPartyIntegrations(rootPath, descriptorPath, entries);
+
     return {
       rootPath,
       name: appName,
@@ -172,7 +186,144 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
       ],
       architecturalTaxonomy: this.buildTaxonomy(target.overrideType ?? matched.type, descriptor.name, matched.confidence),
       componentStereotypeMatrix: this.buildStereotypeMatrix(appName, descriptor.name, matched.confidence),
+      thirdPartyIntegrations,
     };
+  }
+
+  private async detectThirdPartyIntegrations(
+    rootPath: string,
+    descriptorPath: string,
+    entries: Array<{ name: string; isDirectory: () => boolean }>,
+  ): Promise<ThirdPartyIntegration[]> {
+    const matches = new Map<string, ThirdPartyIntegration>();
+    await this.collectFromDescriptor(descriptorPath, matches);
+    await this.collectFromMetadataFiles(rootPath, entries, matches);
+    return Array.from(matches.values()).sort((a, b) => a.productName.localeCompare(b.productName));
+  }
+
+  private async collectFromDescriptor(
+    descriptorPath: string,
+    matches: Map<string, ThirdPartyIntegration>,
+  ): Promise<void> {
+    if (path.basename(descriptorPath).toLowerCase() !== "package.json") {
+      return;
+    }
+
+    try {
+      const raw = await fs.readFile(descriptorPath, "utf8");
+      const pkg = JSON.parse(raw) as {
+        dependencies?: Record<string, string>;
+        devDependencies?: Record<string, string>;
+      };
+      const dependencyNames = [
+        ...Object.keys(pkg.dependencies ?? {}),
+        ...Object.keys(pkg.devDependencies ?? {}),
+      ];
+
+      for (const dependencyName of dependencyNames) {
+        this.addCatalogMatch(matches, dependencyName, {
+          source: "descriptor-dependency",
+          evidence: `Matched dependency '${dependencyName}' in package.json`,
+        });
+      }
+    } catch {
+      // Ignore malformed descriptors; inspection should continue.
+    }
+  }
+
+  private async collectFromMetadataFiles(
+    rootPath: string,
+    entries: Array<{ name: string; isDirectory: () => boolean }>,
+    matches: Map<string, ThirdPartyIntegration>,
+  ): Promise<void> {
+    const metadataFiles = entries
+      .filter(entry => !entry.isDirectory() && THIRD_PARTY_METADATA_FILES.includes(entry.name as (typeof THIRD_PARTY_METADATA_FILES)[number]))
+      .map(entry => entry.name);
+
+    for (const metadataFile of metadataFiles) {
+      const metadataPath = path.join(rootPath, metadataFile);
+      try {
+        const raw = await fs.readFile(metadataPath, "utf8");
+        const parsed = metadataFile.endsWith(".json") ? JSON.parse(raw) : YAML.parse(raw);
+        this.collectFromMetadataPayload(parsed, metadataFile, matches);
+      } catch {
+        // Ignore invalid metadata and continue scanning.
+      }
+    }
+  }
+
+  private collectFromMetadataPayload(
+    payload: unknown,
+    metadataFile: string,
+    matches: Map<string, ThirdPartyIntegration>,
+  ): void {
+    if (Array.isArray(payload)) {
+      for (const entry of payload) {
+        this.collectFromMetadataPayload(entry, metadataFile, matches);
+      }
+      return;
+    }
+
+    if (typeof payload === "string") {
+      this.addCatalogMatch(matches, payload, {
+        source: "metadata-file",
+        evidence: `Matched metadata token '${payload}' in ${metadataFile}`,
+      });
+      return;
+    }
+
+    if (!payload || typeof payload !== "object") {
+      return;
+    }
+
+    const record = payload as Record<string, unknown>;
+    const productCandidate = typeof record.product === "string" ? record.product.trim() : undefined;
+    const categoryCandidate = typeof record.category === "string" ? record.category.trim() : undefined;
+
+    if (productCandidate) {
+      this.addCatalogMatch(matches, productCandidate, {
+        source: "metadata-file",
+        evidence: `Matched product '${productCandidate}' in ${metadataFile}`,
+        categoryOverride: categoryCandidate,
+      });
+    }
+
+    for (const [key, value] of Object.entries(record)) {
+      if (key === "product" || key === "category") {
+        continue;
+      }
+      this.collectFromMetadataPayload(value, metadataFile, matches);
+    }
+  }
+
+  private addCatalogMatch(
+    matches: Map<string, ThirdPartyIntegration>,
+    rawToken: string,
+    options: {
+      source: ThirdPartyIntegration["source"];
+      evidence: string;
+      categoryOverride?: string;
+    },
+  ): void {
+    const token = rawToken.trim();
+    if (!token) {
+      return;
+    }
+
+    const catalogEntry = THIRD_PARTY_CATALOG[token.toLowerCase()];
+    const productName = catalogEntry?.productName ?? token;
+    const category = options.categoryOverride || catalogEntry?.category || "uncategorized";
+    const key = `${productName.toLowerCase()}::${category.toLowerCase()}`;
+    if (matches.has(key)) {
+      return;
+    }
+
+    matches.set(key, {
+      productName,
+      category,
+      source: options.source,
+      evidence: options.evidence,
+    });
   }
 
   private buildTaxonomy(type: string, descriptor: string, confidence: number): ArchitecturalTaxonomyMapping[] {

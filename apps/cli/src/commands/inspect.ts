@@ -9,7 +9,7 @@ interface InspectCommandFlags {
   maxDepth: string;
   detectApps: boolean;
   overrideType?: string;
-  integration: string;
+  integration?: string;
   config?: string;
 }
 
@@ -17,7 +17,7 @@ export function registerInspectCommand(program: Command) {
   program
     .command("inspect [paths...]")
     .description("Inspect repositories or applications using pluggable integrations")
-    .requiredOption("--integration <name>", "Inspector integration to use (required)")
+    .option("--integration <name>", "Inspector integration to use", "filesystem")
     .option("--format <format>", "Output format: json|table", "table")
     .option("--include-hidden", "Include hidden directories and files")
     .option("--max-depth <number>", "Maximum traversal depth", "4")
@@ -33,11 +33,13 @@ export function registerInspectCommand(program: Command) {
       }
 
       // Require a username/org for github integration
-      if (flags.integration === "github" && (!paths || paths.length === 0)) {
+      const integrationName = flags.integration ?? "filesystem";
+
+      if (integrationName === "github" && (!paths || paths.length === 0)) {
         throw new Error("You must provide a GitHub username or org as a path argument for the github integration.");
       }
 
-      const integration = resolveInspectorIntegration(flags.integration);
+      const integration = resolveInspectorIntegration(integrationName);
       const targets = (paths && paths.length > 0 ? paths : ["."]).map(targetPath => ({
         sourcePath: path.resolve(targetPath),
         includeHidden: Boolean(flags.includeHidden),
@@ -82,14 +84,17 @@ function printTable(results: InspectionResult[]) {
       continue;
     }
 
-    console.log("Name | Type | Runtime | Build | Status | Taxonomy | Stereotype | Path");
-    console.log("--- | --- | --- | --- | --- | --- | --- | ---");
+    console.log("Name | Type | Runtime | Build | Status | Taxonomy | Stereotype | 3rd Party | Path");
+    console.log("--- | --- | --- | --- | --- | --- | --- | --- | ---");
 
     for (const application of result.detectedApplications) {
       const taxonomy = application.architecturalTaxonomy.map(mapping => `${mapping.dimension}:${mapping.value}`).join(", ");
       const stereotypes = application.componentStereotypeMatrix.map(entry => entry.stereotype).join(", ");
+      const thirdParty = application.thirdPartyIntegrations
+        .map(integration => `${integration.productName}(${integration.category})`)
+        .join(", ");
       console.log(
-        `${application.name} | ${application.type} | ${application.languageRuntimeGuess} | ${application.buildSystemGuess} | ${application.statusHint} | ${taxonomy || "n/a"} | ${stereotypes || "n/a"} | ${application.rootPath}`,
+        `${application.name} | ${application.type} | ${application.languageRuntimeGuess} | ${application.buildSystemGuess} | ${application.statusHint} | ${taxonomy || "n/a"} | ${stereotypes || "n/a"} | ${thirdParty || "n/a"} | ${application.rootPath}`,
       );
     }
   }

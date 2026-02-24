@@ -111,6 +111,7 @@ export class GithubInspectorIntegration implements InspectorIntegration {
       ],
       architecturalTaxonomy: this.buildTaxonomy(target.overrideType ?? mapping?.type ?? "unknown-repo", repo, mapping?.confidence ?? 0.55),
       componentStereotypeMatrix: this.buildStereotypeMatrix(repo, mapping?.confidence ?? 0.55),
+      thirdPartyIntegrations: [],
     };
   }
 

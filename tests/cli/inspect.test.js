@@ -10,7 +10,22 @@ async function makeFixture() {
   await fs.mkdir(path.join(root, "repo-a"), { recursive: true });
   await fs.writeFile(
     path.join(root, "repo-a", "package.json"),
-    JSON.stringify({ name: "repo-a-service" }, null, 2),
+    JSON.stringify(
+      {
+        name: "repo-a-service",
+        dependencies: {
+          stripe: "^16.0.0",
+          "@sentry/node": "^9.0.0",
+        },
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  await fs.writeFile(
+    path.join(root, "repo-a", "integration-metadata.json"),
+    JSON.stringify({ integrations: [{ product: "Twilio", category: "messaging" }] }, null, 2),
     "utf8",
   );
 
@@ -48,6 +63,15 @@ describe("inspect command", () => {
     expect(apps.some(app => app.descriptorFile === "terraform.tf")).toBe(true);
     expect(apps.every(app => Array.isArray(app.architecturalTaxonomy))).toBe(true);
     expect(apps.every(app => Array.isArray(app.componentStereotypeMatrix))).toBe(true);
+    expect(apps.every(app => Array.isArray(app.thirdPartyIntegrations))).toBe(true);
+    const nodeApp = apps.find(app => app.name === "repo-a-service");
+    expect(nodeApp.thirdPartyIntegrations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ productName: "Stripe", category: "payments" }),
+        expect.objectContaining({ productName: "Sentry", category: "observability" }),
+        expect.objectContaining({ productName: "Twilio", category: "messaging" }),
+      ]),
+    );
   });
 
   it("prints table output by default", async () => {
@@ -55,7 +79,7 @@ describe("inspect command", () => {
     const { stdout, exitCode } = await execa("node", [CLI_PATH, "inspect", fixtureRoot]);
     expect(exitCode).toBe(0);
     expect(stdout).toMatch(/Integration: filesystem/i);
-    expect(stdout).toMatch(/Name \| Type \| Runtime \| Build \| Status \| Taxonomy \| Stereotype \| Path/i);
+    expect(stdout).toMatch(/Name \| Type \| Runtime \| Build \| Status \| Taxonomy \| Stereotype \| 3rd Party \| Path/i);
   });
 
   it("supports stub integrations safely", async () => {
