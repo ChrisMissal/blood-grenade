@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 import type { InspectorIntegration } from "../../domain/inspect/contracts.js";
+import type { ThirdPartyCatalogEntry } from "./third-party-catalog.js";
 import { THIRD_PARTY_CATALOG } from "./third-party-catalog.js";
 import { inferArbCategory } from "../shared/arb-categories.js";
 import { inferC4ContainerStereotype } from "../shared/c4-container-stereotypes.js";
@@ -437,7 +438,7 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
       return;
     }
 
-    const catalogEntry = THIRD_PARTY_CATALOG[token.toLowerCase()];
+    const catalogEntry = this.resolveCatalogEntry(token);
     const productName = catalogEntry?.productName ?? token;
     const category = options.categoryOverride || catalogEntry?.category || "uncategorized";
     const key = `${productName.toLowerCase()}::${category.toLowerCase()}`;
@@ -451,6 +452,18 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
       source: options.source,
       evidence: options.evidence,
     });
+  }
+
+  private resolveCatalogEntry(token: string): ThirdPartyCatalogEntry | undefined {
+    const lowered = token.toLowerCase().trim();
+    const symbolStripped = lowered.replace(/[^\p{L}\p{N}]+/gu, "");
+    const withoutScope = lowered.replace(/^@/, "");
+    const withoutScopeSymbols = withoutScope.replace(/[^\p{L}\p{N}]+/gu, "");
+
+    return THIRD_PARTY_CATALOG[lowered]
+      ?? THIRD_PARTY_CATALOG[symbolStripped]
+      ?? THIRD_PARTY_CATALOG[withoutScope]
+      ?? THIRD_PARTY_CATALOG[withoutScopeSymbols];
   }
 
   private buildTaxonomy(type: string, descriptor: string, confidence: number): ArchitecturalTaxonomyMapping[] {
