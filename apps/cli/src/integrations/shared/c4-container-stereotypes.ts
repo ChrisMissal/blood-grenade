@@ -54,7 +54,7 @@ export function inferC4ContainerStereotype(name: string, inferredType: string): 
   }
 
   if (/(^|[-_])(blob|object[-_]?store|s3|minio|bucket)($|[-_])/.test(normalizedName)) {
-    return "blobl-container";
+    return "blob-container";
   }
 
   if (/(^|[-_])(admin|backoffice|ops|operator)($|[-_])/.test(normalizedName)) {
