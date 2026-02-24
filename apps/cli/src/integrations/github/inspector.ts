@@ -144,6 +144,7 @@ export class GithubInspectorIntegration implements InspectorIntegration {
       architecturalTaxonomy: this.buildTaxonomy(inferredType, repo, confidence),
       componentStereotypeMatrix,
       thirdPartyIntegrations: [],
+      externalHostDependencies: [],
       arbCategory,
     };
   }

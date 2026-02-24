@@ -28,6 +28,16 @@ async function makeFixture() {
     JSON.stringify({ integrations: [{ product: "Twilio", category: "messaging" }] }, null, 2),
     "utf8",
   );
+  await fs.writeFile(
+    path.join(root, "repo-a", ".env"),
+    "STRIPE_BASE_URL=https://api.stripe.com\nCMS_HOST=api.contentful.com\n",
+    "utf8",
+  );
+  await fs.writeFile(
+    path.join(root, "repo-a", "client.ts"),
+    "const sentryDsn = 'https://ingest.sentry.io/api/1234';\n",
+    "utf8",
+  );
 
   await fs.mkdir(path.join(root, "repo-b", "service"), { recursive: true });
   await fs.writeFile(path.join(root, "repo-b", "service", "pyproject.toml"), "[project]\nname='svc'\n", "utf8");
@@ -71,6 +81,7 @@ describe("inspect command", () => {
     expect(apps.every(app => Array.isArray(app.architecturalTaxonomy))).toBe(true);
     expect(apps.every(app => Array.isArray(app.componentStereotypeMatrix))).toBe(true);
     expect(apps.every(app => Array.isArray(app.thirdPartyIntegrations))).toBe(true);
+    expect(apps.every(app => Array.isArray(app.externalHostDependencies))).toBe(true);
     const nodeApp = apps.find(app => app.name === "repo-a-service");
     expect(nodeApp.componentStereotypeMatrix).toEqual(
       expect.arrayContaining([expect.objectContaining({ stereotype: "public-api" })]),
@@ -82,6 +93,12 @@ describe("inspect command", () => {
         expect.objectContaining({ productName: "Twilio", category: "messaging" }),
       ]),
     );
+    expect(nodeApp.externalHostDependencies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ host: "api.stripe.com", classification: "third-party", productHint: "Stripe" }),
+        expect.objectContaining({ host: "ingest.sentry.io", classification: "third-party", productHint: "Sentry" }),
+      ]),
+    );
   });
 
   it("prints table output by default", async () => {
@@ -89,7 +106,7 @@ describe("inspect command", () => {
     const { stdout, exitCode } = await execa("node", [CLI_PATH, "inspect", fixtureRoot]);
     expect(exitCode).toBe(0);
     expect(stdout).toMatch(/Integration: filesystem/i);
-    expect(stdout).toMatch(/Name \| Type \| ARB \| Runtime \| Build \| Status \| Taxonomy \| Stereotype \| 3rd Party \| Path/i);
+    expect(stdout).toMatch(/Name \| Type \| ARB \| Runtime \| Build \| Status \| Taxonomy \| Stereotype \| 3rd Party \| Hosts \| Path/i);
   });
 
   it("supports stub integrations safely", async () => {

@@ -6,6 +6,7 @@ import type { ThirdPartyCatalogEntry } from "./third-party-catalog.js";
 import { THIRD_PARTY_CATALOG } from "./third-party-catalog.js";
 import { inferArbCategory } from "../shared/arb-categories.js";
 import { inferC4ContainerStereotype } from "../shared/c4-container-stereotypes.js";
+import { sniffExternalHosts } from "../shared/host-sniffing.js";
 import type {
   ArchitecturalTaxonomyMapping,
   ComponentStereotypeMatrixEntry,
@@ -207,6 +208,7 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
     }
 
     const thirdPartyIntegrations = await this.detectThirdPartyIntegrations(rootPath, descriptorPath, entries);
+    const externalHostDependencies = await sniffExternalHosts(rootPath);
 
     const componentStereotypeMatrix = this.buildStereotypeMatrix(
       appName,
@@ -238,6 +240,7 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
       architecturalTaxonomy: this.buildTaxonomy(appType, descriptorFile, confidence),
       componentStereotypeMatrix,
       thirdPartyIntegrations,
+      externalHostDependencies,
       arbCategory,
     };
   }

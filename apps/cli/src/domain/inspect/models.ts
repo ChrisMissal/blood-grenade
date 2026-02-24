@@ -24,6 +24,15 @@ export interface ThirdPartyIntegration {
 
 export type ArbCategory = "Experience" | "Domain" | "Integration" | "Data" | "Processing" | "Platform" | "Governance";
 
+export interface ExternalHostDependency {
+  host: string;
+  url?: string;
+  sourceFile: string;
+  sourceType: "config" | "source";
+  classification: "first-party" | "third-party" | "unknown";
+  productHint?: string;
+}
+
 export interface InspectionTarget {
   sourcePath: string;
   includeHidden: boolean;
@@ -46,6 +55,7 @@ export interface DetectedApplication {
   architecturalTaxonomy: ArchitecturalTaxonomyMapping[];
   componentStereotypeMatrix: ComponentStereotypeMatrixEntry[];
   thirdPartyIntegrations: ThirdPartyIntegration[];
+  externalHostDependencies: ExternalHostDependency[];
   arbCategory: ArbCategory;
 }
 
