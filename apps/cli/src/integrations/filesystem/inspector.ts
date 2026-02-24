@@ -3,6 +3,7 @@ import path from "node:path";
 import YAML from "yaml";
 import type { InspectorIntegration } from "../../domain/inspect/contracts.js";
 import { THIRD_PARTY_CATALOG } from "./third-party-catalog.js";
+import { inferArbCategory } from "../shared/arb-categories.js";
 import { inferC4ContainerStereotype } from "../shared/c4-container-stereotypes.js";
 import type {
   ArchitecturalTaxonomyMapping,
@@ -206,6 +207,18 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
 
     const thirdPartyIntegrations = await this.detectThirdPartyIntegrations(rootPath, descriptorPath, entries);
 
+    const componentStereotypeMatrix = this.buildStereotypeMatrix(
+      appName,
+      descriptorFile,
+      appType,
+      confidence,
+    );
+    const arbCategory = inferArbCategory(
+      appName,
+      appType,
+      componentStereotypeMatrix.map(entry => entry.stereotype),
+    );
+
     return {
       rootPath,
       name: appName,
@@ -222,13 +235,9 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
         target.overrideType ? `Type overridden to ${target.overrideType}` : "Type inferred from heuristics",
       ],
       architecturalTaxonomy: this.buildTaxonomy(appType, descriptorFile, confidence),
-      componentStereotypeMatrix: this.buildStereotypeMatrix(
-        appName,
-        descriptorFile,
-        appType,
-        confidence,
-      ),
+      componentStereotypeMatrix,
       thirdPartyIntegrations,
+      arbCategory,
     };
   }
 

@@ -84,8 +84,8 @@ function printTable(results: InspectionResult[]) {
       continue;
     }
 
-    console.log("Name | Type | Runtime | Build | Status | Taxonomy | Stereotype | 3rd Party | Path");
-    console.log("--- | --- | --- | --- | --- | --- | --- | --- | ---");
+    console.log("Name | Type | ARB | Runtime | Build | Status | Taxonomy | Stereotype | 3rd Party | Path");
+    console.log("--- | --- | --- | --- | --- | --- | --- | --- | --- | ---");
 
     for (const application of result.detectedApplications) {
       const taxonomy = application.architecturalTaxonomy.map(mapping => `${mapping.dimension}:${mapping.value}`).join(", ");
@@ -94,7 +94,7 @@ function printTable(results: InspectionResult[]) {
         .map(integration => `${integration.productName}(${integration.category})`)
         .join(", ");
       console.log(
-        `${application.name} | ${application.type} | ${application.languageRuntimeGuess} | ${application.buildSystemGuess} | ${application.statusHint} | ${taxonomy || "n/a"} | ${stereotypes || "n/a"} | ${thirdParty || "n/a"} | ${application.rootPath}`,
+        `${application.name} | ${application.type} | ${application.arbCategory} | ${application.languageRuntimeGuess} | ${application.buildSystemGuess} | ${application.statusHint} | ${taxonomy || "n/a"} | ${stereotypes || "n/a"} | ${thirdParty || "n/a"} | ${application.rootPath}`,
       );
     }
   }

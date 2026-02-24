@@ -1,4 +1,5 @@
 import type { InspectorIntegration } from "../../domain/inspect/contracts.js";
+import { inferArbCategory } from "../shared/arb-categories.js";
 import { inferC4ContainerStereotype } from "../shared/c4-container-stereotypes.js";
 import type {
   ArchitecturalTaxonomyMapping,
@@ -116,6 +117,13 @@ export class GithubInspectorIntegration implements InspectorIntegration {
     const runtimeGuess = mapping?.runtime ?? fallback?.runtime ?? "unknown";
     const buildSystemGuess = mapping?.buildSystem ?? fallback?.buildSystem ?? "unknown";
     const confidence = mapping?.confidence ?? fallback?.confidence ?? 0.55;
+    const componentStereotypeMatrix = this.buildStereotypeMatrix(repo, inferredType, confidence);
+    const arbCategory = inferArbCategory(
+      repo.name,
+      inferredType,
+      componentStereotypeMatrix.map(entry => entry.stereotype),
+    );
+
     return {
       rootPath: repo.html_url,
       name: repo.name,
@@ -134,8 +142,9 @@ export class GithubInspectorIntegration implements InspectorIntegration {
         `Stars: ${repo.stargazers_count ?? 0}`,
       ],
       architecturalTaxonomy: this.buildTaxonomy(inferredType, repo, confidence),
-      componentStereotypeMatrix: this.buildStereotypeMatrix(repo, inferredType, confidence),
+      componentStereotypeMatrix,
       thirdPartyIntegrations: [],
+      arbCategory,
     };
   }
 

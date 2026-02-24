@@ -46,6 +46,7 @@ const assert = (cond, msg) => { if (!cond) throw new Error(msg); };
     assert(Array.isArray(app.architecturalTaxonomy), "Each app should have architecturalTaxonomy array");
     assert(Array.isArray(app.componentStereotypeMatrix), "Each app should have componentStereotypeMatrix array");
     assert(Array.isArray(app.thirdPartyIntegrations), "Each app should have thirdPartyIntegrations array");
+    assert(typeof app.arbCategory === "string" && app.arbCategory.length > 0, "Each app should have arbCategory");
     // Taxonomy checks
     for (const tax of app.architecturalTaxonomy) {
       assert(typeof tax.dimension === "string", "Taxonomy should have dimension");

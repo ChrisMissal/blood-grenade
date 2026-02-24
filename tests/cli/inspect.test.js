@@ -67,6 +67,7 @@ describe("inspect command", () => {
     expect(apps.some(app => app.descriptorFile === "terraform.tf")).toBe(true);
     expect(apps.some(app => app.type === "sql-job")).toBe(true);
     expect(apps.some(app => app.type === "data-job")).toBe(true);
+    expect(apps.every(app => typeof app.arbCategory === "string")).toBe(true);
     expect(apps.every(app => Array.isArray(app.architecturalTaxonomy))).toBe(true);
     expect(apps.every(app => Array.isArray(app.componentStereotypeMatrix))).toBe(true);
     expect(apps.every(app => Array.isArray(app.thirdPartyIntegrations))).toBe(true);
@@ -88,7 +89,7 @@ describe("inspect command", () => {
     const { stdout, exitCode } = await execa("node", [CLI_PATH, "inspect", fixtureRoot]);
     expect(exitCode).toBe(0);
     expect(stdout).toMatch(/Integration: filesystem/i);
-    expect(stdout).toMatch(/Name \| Type \| Runtime \| Build \| Status \| Taxonomy \| Stereotype \| 3rd Party \| Path/i);
+    expect(stdout).toMatch(/Name \| Type \| ARB \| Runtime \| Build \| Status \| Taxonomy \| Stereotype \| 3rd Party \| Path/i);
   });
 
   it("supports stub integrations safely", async () => {

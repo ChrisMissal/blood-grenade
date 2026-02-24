@@ -22,6 +22,8 @@ export interface ThirdPartyIntegration {
   evidence: string;
 }
 
+export type ArbCategory = "Experience" | "Domain" | "Integration" | "Data" | "Processing" | "Platform" | "Governance";
+
 export interface InspectionTarget {
   sourcePath: string;
   includeHidden: boolean;
@@ -44,6 +46,7 @@ export interface DetectedApplication {
   architecturalTaxonomy: ArchitecturalTaxonomyMapping[];
   componentStereotypeMatrix: ComponentStereotypeMatrixEntry[];
   thirdPartyIntegrations: ThirdPartyIntegration[];
+  arbCategory: ArbCategory;
 }
 
 export interface InspectionError {
