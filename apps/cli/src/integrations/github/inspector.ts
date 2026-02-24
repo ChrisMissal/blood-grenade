@@ -93,11 +93,12 @@ export class GithubInspectorIntegration implements InspectorIntegration {
 
   private mapRepositoryToDetectedApplication(target: InspectionTarget, repo: GithubRepoResponse): DetectedApplication {
     const mapping = repo.language ? LANGUAGE_MAPPINGS[repo.language] : undefined;
+    const inferredType = target.overrideType ?? mapping?.type ?? "unknown-repo";
     return {
       rootPath: repo.html_url,
       name: repo.name,
       descriptorFile: "github-repository",
-      type: target.overrideType ?? mapping?.type ?? "unknown-repo",
+      type: inferredType,
       languageRuntimeGuess: mapping?.runtime ?? "unknown",
       buildSystemGuess: mapping?.buildSystem ?? "unknown",
       statusHint: repo.archived ? "halted" : "active",
@@ -109,8 +110,8 @@ export class GithubInspectorIntegration implements InspectorIntegration {
         `Visibility: ${repo.visibility ?? "unknown"}`,
         `Stars: ${repo.stargazers_count ?? 0}`,
       ],
-      architecturalTaxonomy: this.buildTaxonomy(target.overrideType ?? mapping?.type ?? "unknown-repo", repo, mapping?.confidence ?? 0.55),
-      componentStereotypeMatrix: this.buildStereotypeMatrix(repo, mapping?.confidence ?? 0.55),
+      architecturalTaxonomy: this.buildTaxonomy(inferredType, repo, mapping?.confidence ?? 0.55),
+      componentStereotypeMatrix: this.buildStereotypeMatrix(repo, inferredType, mapping?.confidence ?? 0.55),
       thirdPartyIntegrations: [],
     };
   }
@@ -132,7 +133,7 @@ export class GithubInspectorIntegration implements InspectorIntegration {
     ];
   }
 
-  private buildStereotypeMatrix(repo: GithubRepoResponse, confidence: number): ComponentStereotypeMatrixEntry[] {
+  private buildStereotypeMatrix(repo: GithubRepoResponse, inferredType: string, confidence: number): ComponentStereotypeMatrixEntry[] {
     return [
       {
         stereotype: this.inferStereotype(repo.name),
@@ -140,6 +141,13 @@ export class GithubInspectorIntegration implements InspectorIntegration {
         source: "github-repository",
         confidence,
         notes: [`Derived from repository name ${repo.name}`],
+      },
+      {
+        stereotype: this.inferC4ContainerStereotype(repo.name, inferredType),
+        componentName: repo.name,
+        source: "github-repository",
+        confidence: Math.max(0.5, confidence - 0.05),
+        notes: [`Mapped to C4 container stereotype from repository name and inferred type ${inferredType}.`],
       },
     ];
   }
@@ -165,6 +173,22 @@ export class GithubInspectorIntegration implements InspectorIntegration {
       return "platform-component";
     }
     return "service-component";
+  }
+
+  private inferC4ContainerStereotype(repositoryName: string, inferredType: string): string {
+    if (/infra|terraform|platform/i.test(repositoryName) || inferredType === "terraform-stack") {
+      return "c4-container:infrastructure";
+    }
+    if (/worker|job|queue/i.test(repositoryName)) {
+      return "c4-container:worker";
+    }
+    if (/ui|web|frontend/i.test(repositoryName)) {
+      return "c4-container:web-application";
+    }
+    if (/api|service|backend/i.test(repositoryName)) {
+      return "c4-container:api-application";
+    }
+    return "c4-container:application";
   }
 
   private async fetchOwner(owner: string, result: InspectionResult): Promise<GithubOwnerResponse> {

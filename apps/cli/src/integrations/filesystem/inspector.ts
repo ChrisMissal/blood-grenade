@@ -185,7 +185,12 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
         target.overrideType ? `Type overridden to ${target.overrideType}` : "Type inferred from heuristics",
       ],
       architecturalTaxonomy: this.buildTaxonomy(target.overrideType ?? matched.type, descriptor.name, matched.confidence),
-      componentStereotypeMatrix: this.buildStereotypeMatrix(appName, descriptor.name, matched.confidence),
+      componentStereotypeMatrix: this.buildStereotypeMatrix(
+        appName,
+        descriptor.name,
+        target.overrideType ?? matched.type,
+        matched.confidence,
+      ),
       thirdPartyIntegrations,
     };
   }
@@ -343,7 +348,12 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
     ];
   }
 
-  private buildStereotypeMatrix(appName: string, descriptor: string, confidence: number): ComponentStereotypeMatrixEntry[] {
+  private buildStereotypeMatrix(
+    appName: string,
+    descriptor: string,
+    appType: string,
+    confidence: number,
+  ): ComponentStereotypeMatrixEntry[] {
     return [
       {
         stereotype: "application-shell",
@@ -352,7 +362,24 @@ export class FilesystemInspectorIntegration implements InspectorIntegration {
         confidence,
         notes: ["Top-level descriptor indicates deployable application boundary."],
       },
+      {
+        stereotype: this.inferC4ContainerStereotype(appType),
+        componentName: appName,
+        source: descriptor,
+        confidence: Math.max(0.6, confidence - 0.05),
+        notes: [`Mapped to C4 container stereotype from inferred type ${appType}.`],
+      },
     ];
+  }
+
+  private inferC4ContainerStereotype(appType: string): string {
+    if (appType === "terraform-stack") {
+      return "c4-container:infrastructure";
+    }
+    if (appType === "container-compose") {
+      return "c4-container:orchestrator";
+    }
+    return "c4-container:application";
   }
 
   private async resolveRepositoryRoot(inputPath: string): Promise<string> {
